@@ -13,6 +13,7 @@ import {
   Plus,
   Edit2,
   Trash2,
+  Wallet,
 } from 'lucide-react'
 import api from '../lib/api'
 import type { Patient, ApiResponse, Soin } from '../types'
@@ -24,6 +25,8 @@ export default function PatientDetailsPage() {
   const [showSoinForm, setShowSoinForm] = useState(false)
   const [selectedSoin, setSelectedSoin] = useState<Soin | null>(null)
   const [showEditForm, setShowEditForm] = useState(false)
+  const [showSoinDetail, setShowSoinDetail] = useState(false)
+  const [selectedSoinDetail, setSelectedSoinDetail] = useState<Soin | null>(null)
 
   const { data: patient, isLoading } = useQuery({
     queryKey: ['patient', id],
@@ -77,6 +80,11 @@ export default function PatientDetailsPage() {
     setShowSoinForm(true)
   }
 
+  const handleViewSoin = (soin: Soin) => {
+    setSelectedSoinDetail(soin)
+    setShowSoinDetail(true)
+  }
+
   if (showEditForm && patient) {
     return (
       <PatientForm
@@ -114,6 +122,28 @@ export default function PatientDetailsPage() {
           setShowSoinForm(false)
           setSelectedSoin(null)
         }}
+      />
+    )
+  }
+
+  if (showSoinDetail && selectedSoinDetail) {
+    return (
+      <SoinDetailView
+        soin={selectedSoinDetail}
+        patientName={`${patient.nom} ${patient.prenom}`}
+        onClose={() => {
+          setShowSoinDetail(false)
+          setSelectedSoinDetail(null)
+        }}
+        onEdit={() => {
+          setShowSoinDetail(false)
+          handleEditSoin(selectedSoinDetail)
+        }}
+        onDelete={() => {
+          setShowSoinDetail(false)
+          handleDeleteSoin(selectedSoinDetail)
+        }}
+        formatDate={formatDate}
       />
     )
   }
@@ -261,49 +291,266 @@ export default function PatientDetailsPage() {
             <p className="text-gray-400 text-lg">Aucune consultation enregistrée</p>
           </div>
         ) : (
-          <div className="divide-y divide-gray-200/60">
-            {patient.soins
-              .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
-              .map((soin) => (
-                <div key={soin._id} className="p-6 hover:bg-gray-50/50 transition-colors duration-150 group">
-                  <div className="flex justify-between items-start">
-                    <div className="flex-1">
-                      <div className="flex items-center gap-3 mb-3">
-                        <h3 className="font-semibold text-gray-900">Consultation du {formatDate(soin.date)}</h3>
-                      </div>
-                      {soin.description && <p className="text-gray-600 mb-4 leading-relaxed">{soin.description}</p>}
-                      <div className="flex items-center gap-6 text-sm">
-                        <div className="flex items-center gap-2">
-                          <span className="text-gray-500">Honoraire:</span>
-                          <span className="px-2.5 py-1 bg-blue-50 text-blue-700 font-semibold rounded-lg">{soin.honoraire.toFixed(2)} TND</span>
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead>
+                <tr className="bg-gray-50 border-b border-gray-200">
+                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">Date</th>
+                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">Dent</th>
+                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">Description</th>
+                  <th className="px-6 py-4 text-right text-sm font-semibold text-gray-700">Honoraire</th>
+                  <th className="px-6 py-4 text-right text-sm font-semibold text-gray-700">Reçu</th>
+                  <th className="px-6 py-4 text-center text-sm font-semibold text-gray-700">Actions</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-100">
+                {patient.soins
+                  .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+                  .map((soin) => (
+                    <tr 
+                      key={soin._id} 
+                      onClick={() => handleViewSoin(soin)}
+                      className="hover:bg-blue-50/30 transition-colors group cursor-pointer"
+                    >
+                      <td className="px-6 py-4 text-sm font-medium text-gray-900 whitespace-nowrap">
+                        {formatDate(soin.date)}
+                      </td>
+                      <td className="px-6 py-4 text-sm text-gray-600">
+                        {soin.dent || '-'}
+                      </td>
+                      <td className="px-6 py-4 text-sm text-gray-600 max-w-md">
+                        {soin.description || '-'}
+                      </td>
+                      <td className="px-6 py-4 text-sm text-right">
+                        <span className="inline-flex items-center px-2.5 py-1 bg-blue-50 text-blue-700 font-semibold rounded-lg">
+                          {soin.honoraire.toFixed(2)} TND
+                        </span>
+                      </td>
+                      <td className="px-6 py-4 text-sm text-right">
+                        <span className="inline-flex items-center px-2.5 py-1 bg-green-50 text-green-700 font-semibold rounded-lg">
+                          {soin.recu.toFixed(2)} TND
+                        </span>
+                      </td>
+                      <td className="px-6 py-4 text-center" onClick={(e) => e.stopPropagation()}>
+                        <div className="flex items-center justify-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation()
+                              handleEditSoin(soin)
+                            }}
+                            className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-all"
+                            title="Modifier"
+                          >
+                            <Edit2 className="w-4 h-4" />
+                          </button>
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation()
+                              handleDeleteSoin(soin)
+                            }}
+                            className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-all"
+                            title="Supprimer"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
                         </div>
-                        <div className="flex items-center gap-2">
-                          <span className="text-gray-500">Reçu:</span>
-                          <span className="px-2.5 py-1 bg-green-50 text-green-700 font-semibold rounded-lg">{soin.recu.toFixed(2)} TND</span>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="flex gap-2 ml-4 opacity-0 group-hover:opacity-100 transition-opacity duration-150">
-                      <button
-                        onClick={() => handleEditSoin(soin)}
-                        className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg hover:scale-105 transition-all duration-150"
-                        title="Modifier"
-                      >
-                        <Edit2 className="w-4 h-4" />
-                      </button>
-                      <button
-                        onClick={() => handleDeleteSoin(soin)}
-                        className="p-2 text-red-600 hover:bg-red-50 rounded-lg hover:scale-105 transition-all duration-150"
-                        title="Supprimer"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              ))}
+                      </td>
+                    </tr>
+                  ))}
+              </tbody>
+            </table>
           </div>
         )}
+      </div>
+    </div>
+  )
+}
+
+// Soin Detail View Component (Read-only)
+function SoinDetailView({
+  soin,
+  patientName,
+  onClose,
+  onEdit,
+  onDelete,
+  formatDate,
+}: {
+  soin: Soin
+  patientName: string
+  onClose: () => void
+  onEdit: () => void
+  onDelete: () => void
+  formatDate: (date: string) => string
+}) {
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 p-8">
+      <div className="max-w-4xl mx-auto">
+        {/* Header with Back Button */}
+        <div className="flex items-center justify-between mb-6">
+          <button
+            onClick={onClose}
+            className="group flex items-center gap-2 text-gray-600 hover:text-gray-900 transition-colors"
+          >
+            <ArrowLeft className="w-5 h-5 transition-transform group-hover:-translate-x-1" />
+            <span className="font-medium">Retour</span>
+          </button>
+        </div>
+
+        {/* Main Card */}
+        <div className="bg-white rounded-3xl shadow-xl border border-gray-200 overflow-hidden">
+          {/* Header Section */}
+          <div className="bg-gradient-to-r from-blue-500 to-blue-600 px-8 py-6">
+            <div className="flex items-start justify-between">
+              <div className="flex items-center gap-4">
+                <div className="w-16 h-16 rounded-2xl bg-white/20 backdrop-blur-xl flex items-center justify-center">
+                  <FileText className="w-8 h-8 text-white" />
+                </div>
+                <div>
+                  <h1 className="text-3xl font-bold text-white mb-1">
+                    Consultation
+                  </h1>
+                  <p className="text-blue-100 text-sm">
+                    Patient: {patientName}
+                  </p>
+                </div>
+              </div>
+              <div className="flex gap-2">
+                <button
+                  onClick={onEdit}
+                  className="p-3 bg-white/20 hover:bg-white/30 backdrop-blur-xl rounded-xl transition-all text-white"
+                  title="Modifier"
+                >
+                  <Edit2 className="w-5 h-5" />
+                </button>
+                <button
+                  onClick={onDelete}
+                  className="p-3 bg-red-500/20 hover:bg-red-500/30 backdrop-blur-xl rounded-xl transition-all text-white"
+                  title="Supprimer"
+                >
+                  <Trash2 className="w-5 h-5" />
+                </button>
+              </div>
+            </div>
+          </div>
+
+          {/* Content Section */}
+          <div className="p-8 space-y-8">
+            {/* Date & Dent Row */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="bg-gradient-to-br from-blue-50 to-blue-100/50 rounded-2xl p-6 border border-blue-200">
+                <div className="flex items-center gap-3 mb-2">
+                  <div className="w-10 h-10 rounded-xl bg-blue-500 flex items-center justify-center">
+                    <Calendar className="w-5 h-5 text-white" />
+                  </div>
+                  <span className="text-sm font-semibold text-blue-900">Date</span>
+                </div>
+                <p className="text-2xl font-bold text-gray-900 mt-2">
+                  {formatDate(soin.date)}
+                </p>
+              </div>
+
+              <div className="bg-gradient-to-br from-purple-50 to-purple-100/50 rounded-2xl p-6 border border-purple-200">
+                <div className="flex items-center gap-3 mb-2">
+                  <div className="w-10 h-10 rounded-xl bg-purple-500 flex items-center justify-center">
+                    <FileText className="w-5 h-5 text-white" />
+                  </div>
+                  <span className="text-sm font-semibold text-purple-900">Dent</span>
+                </div>
+                <p className="text-2xl font-bold text-gray-900 mt-2">
+                  {soin.dent || '-'}
+                </p>
+              </div>
+            </div>
+
+            {/* Description Section */}
+            <div className="bg-gradient-to-br from-gray-50 to-gray-100/50 rounded-2xl p-6 border border-gray-200">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-10 h-10 rounded-xl bg-gray-500 flex items-center justify-center">
+                  <FileText className="w-5 h-5 text-white" />
+                </div>
+                <span className="text-sm font-semibold text-gray-900">Description</span>
+              </div>
+              <p className="text-gray-700 text-base leading-relaxed whitespace-pre-wrap">
+                {soin.description || 'Aucune description'}
+              </p>
+            </div>
+
+            {/* Financial Info Row */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="bg-gradient-to-br from-blue-50 to-blue-100/50 rounded-2xl p-6 border border-blue-200">
+                <div className="flex items-center gap-3 mb-2">
+                  <div className="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center">
+                    <CreditCard className="w-5 h-5 text-white" />
+                  </div>
+                  <span className="text-sm font-semibold text-blue-900">Honoraire</span>
+                </div>
+                <p className="text-3xl font-bold text-blue-700 mt-2">
+                  {soin.honoraire.toFixed(2)} TND
+                </p>
+              </div>
+
+              <div className="bg-gradient-to-br from-green-50 to-green-100/50 rounded-2xl p-6 border border-green-200">
+                <div className="flex items-center gap-3 mb-2">
+                  <div className="w-10 h-10 rounded-xl bg-green-600 flex items-center justify-center">
+                    <Wallet className="w-5 h-5 text-white" />
+                  </div>
+                  <span className="text-sm font-semibold text-green-900">Montant Reçu</span>
+                </div>
+                <p className="text-3xl font-bold text-green-700 mt-2">
+                  {soin.recu.toFixed(2)} TND
+                </p>
+              </div>
+            </div>
+
+            {/* Balance Section */}
+            {soin.honoraire !== soin.recu && (
+              <div className={`rounded-2xl p-6 border ${
+                soin.recu < soin.honoraire 
+                  ? 'bg-gradient-to-br from-orange-50 to-orange-100/50 border-orange-200' 
+                  : 'bg-gradient-to-br from-green-50 to-green-100/50 border-green-200'
+              }`}>
+                <div className="flex items-center justify-between">
+                  <span className={`text-sm font-semibold ${
+                    soin.recu < soin.honoraire ? 'text-orange-900' : 'text-green-900'
+                  }`}>
+                    {soin.recu < soin.honoraire ? 'Reste à payer' : 'Surplus payé'}
+                  </span>
+                  <p className={`text-2xl font-bold ${
+                    soin.recu < soin.honoraire ? 'text-orange-700' : 'text-green-700'
+                  }`}>
+                    {Math.abs(soin.honoraire - soin.recu).toFixed(2)} TND
+                  </p>
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Footer with Actions */}
+          <div className="bg-gray-50 px-8 py-6 border-t border-gray-200 flex justify-between items-center">
+            <button
+              onClick={onClose}
+              className="px-6 py-3 border border-gray-300 rounded-xl hover:bg-white transition-all font-medium text-gray-700"
+            >
+              Fermer
+            </button>
+            <div className="flex gap-3">
+              <button
+                onClick={onDelete}
+                className="px-6 py-3 border border-red-300 text-red-600 rounded-xl hover:bg-red-50 transition-all font-medium flex items-center gap-2"
+              >
+                <Trash2 className="w-4 h-4" />
+                Supprimer
+              </button>
+              <button
+                onClick={onEdit}
+                className="px-6 py-3 bg-gradient-to-b from-blue-500 to-blue-600 text-white rounded-xl hover:from-blue-600 hover:to-blue-700 shadow-lg shadow-blue-500/30 transition-all font-medium flex items-center gap-2"
+              >
+                <Edit2 className="w-4 h-4" />
+                Modifier
+              </button>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   )
@@ -322,6 +569,7 @@ function SoinForm({
   const queryClient = useQueryClient()
   const [formData, setFormData] = useState({
     date: soin?.date.split('T')[0] || new Date().toISOString().split('T')[0],
+    dent: soin?.dent || '',
     description: soin?.description || '',
     honoraire: soin?.honoraire.toString() || '',
     recu: soin?.recu.toString() || '',
@@ -330,9 +578,11 @@ function SoinForm({
   const mutation = useMutation({
     mutationFn: async (data: typeof formData) => {
       const payload = {
-        ...data,
-        honoraire: parseFloat(data.honoraire),
-        recu: parseFloat(data.recu),
+        date: data.date,
+        dent: data.dent || undefined,
+        description: data.description,
+        honoraire: data.honoraire ? parseFloat(data.honoraire) : 0,
+        recu: data.recu ? parseFloat(data.recu) : 0,
       }
       if (soin) {
         return api.patch(`/patients/${patientId}/soins/${soin._id}`, payload)
@@ -372,16 +622,30 @@ function SoinForm({
         </div>
 
         <form onSubmit={handleSubmit} className="p-6 space-y-6">
-          <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-2">Date *</label>
-            <input
-              type="date"
-              name="date"
-              value={formData.date}
-              onChange={handleChange}
-              required
-              className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all duration-150"
-            />
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-2">Date *</label>
+              <input
+                type="date"
+                name="date"
+                value={formData.date}
+                onChange={handleChange}
+                required
+                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all duration-150"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-2">Dent</label>
+              <input
+                type="text"
+                name="dent"
+                value={formData.dent}
+                onChange={handleChange}
+                placeholder="Ex: 11, 21, 36..."
+                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all duration-150"
+              />
+            </div>
           </div>
 
           <div>
@@ -398,28 +662,28 @@ function SoinForm({
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">Honoraire (TND) *</label>
+              <label className="block text-sm font-semibold text-gray-700 mb-2">Honoraire (TND)</label>
               <input
                 type="number"
                 name="honoraire"
                 value={formData.honoraire}
                 onChange={handleChange}
-                required
                 min="0"
                 step="0.01"
+                placeholder="0.00"
                 className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all duration-150"
               />
             </div>
             <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">Montant Reçu (TND) *</label>
+              <label className="block text-sm font-semibold text-gray-700 mb-2">Montant Reçu (TND)</label>
               <input
                 type="number"
                 name="recu"
                 value={formData.recu}
                 onChange={handleChange}
-                required
                 min="0"
                 step="0.01"
+                placeholder="0.00"
                 className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all duration-150"
               />
             </div>

@@ -175,7 +175,7 @@ export const updatePatient = async (req: AuthRequest, res: Response) => {
 export const addSoin = async (req: AuthRequest, res: Response) => {
   try {
     const { id } = req.params;
-    const { date, description, honoraire, recu } = req.body;
+    const { date, dent, description, honoraire, recu } = req.body;
     
     const patient = await Patient.findById(id);
     if (!patient) {
@@ -184,9 +184,10 @@ export const addSoin = async (req: AuthRequest, res: Response) => {
     
     patient.soins.push({
       date: date || new Date(),
+      dent: dent || undefined,
       description,
-      honoraire,
-      recu,
+      honoraire: honoraire || 0,
+      recu: recu || 0,
       createdAt: new Date()
     } as any);
     
@@ -208,7 +209,7 @@ export const addSoin = async (req: AuthRequest, res: Response) => {
 export const updateSoin = async (req: AuthRequest, res: Response) => {
   try {
     const { id, soinId } = req.params;
-    const { date, description, honoraire, recu } = req.body;
+    const { date, dent, description, honoraire, recu } = req.body;
     
     const patient = await Patient.findById(id);
     if (!patient) {
@@ -222,9 +223,10 @@ export const updateSoin = async (req: AuthRequest, res: Response) => {
     
     // Mettre à jour les champs fournis
     if (date) soin.date = new Date(date);
-    if (description) soin.description = description;
-    if (honoraire !== undefined) soin.honoraire = honoraire;
-    if (recu !== undefined) soin.recu = recu;
+    if (dent !== undefined) soin.dent = dent;
+    if (description !== undefined) soin.description = description;
+    if (honoraire !== undefined) soin.honoraire = honoraire || 0;
+    if (recu !== undefined) soin.recu = recu || 0;
     
     await patient.save();
     

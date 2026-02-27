@@ -25,6 +25,7 @@ interface ApiResponse<T> {
 interface Soin {
   _id: string
   date: string
+  dent?: string
   description: string
   honoraire: number
   recu: number

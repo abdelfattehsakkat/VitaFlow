@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
 import { useMutation, useQueryClient, useQuery } from '@tanstack/react-query'
-import { X, Search, Calendar, Users, Clock, Trash2 } from 'lucide-react'
+import { X, Search, Calendar, Users, Clock, Trash2, UserPlus } from 'lucide-react'
 import api from '../lib/api'
 import type { RendezVous, Patient, ApiResponse } from '../types'
 
@@ -37,6 +37,15 @@ export default function AppointmentForm({ appointment, defaultDate, defaultStart
     statut: appointment?.statut || 'planifie',
   })
 
+  const [isNewPatientMode, setIsNewPatientMode] = useState(false)
+  const [newPatientData, setNewPatientData] = useState({
+    nom: '',
+    prenom: '',
+    dateNaissance: '',
+    telephone: '',
+    email: '',
+    adresse: '',
+  })
   const [searchQuery, setSearchQuery] = useState(appointment?.patientNom || '')
   const [selectedPatient, setSelectedPatient] = useState<Patient | null>(null)
   const [showDropdown, setShowDropdown] = useState(false)
@@ -67,23 +76,41 @@ export default function AppointmentForm({ appointment, defaultDate, defaultStart
 
   const mutation = useMutation({
     mutationFn: async (data: typeof formData) => {
+      let finalPatientId = data.patientId
+
+      // Si on est en mode nouveau patient, créer le patient d'abord
+      if (isNewPatientMode && !appointment) {
+        const patientResponse = await api.post<ApiResponse<Patient>>('/patients', newPatientData)
+        finalPatientId = patientResponse.data.data._id
+      }
+
+      // Créer ou mettre à jour le rendez-vous
+      const rdvData = { ...data, patientId: finalPatientId }
       if (appointment) {
-        return api.patch(`/rendez-vous/${appointment._id}`, data)
+        return api.patch(`/rendez-vous/${appointment._id}`, rdvData)
       } else {
-        return api.post('/rendez-vous', data)
+        return api.post('/rendez-vous', rdvData)
       }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['rendez-vous'] })
+      queryClient.invalidateQueries({ queryKey: ['patients'] })
       onClose()
     },
   })
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    if (!formData.patientId) {
+    
+    // Validation : soit un patient existant est sélectionné, soit on crée un nouveau patient
+    if (!isNewPatientMode && !formData.patientId) {
       return
     }
+    
+    if (isNewPatientMode && (!newPatientData.nom || !newPatientData.prenom || !newPatientData.dateNaissance || !newPatientData.telephone)) {
+      return
+    }
+    
     mutation.mutate(formData)
   }
 
@@ -106,6 +133,26 @@ export default function AppointmentForm({ appointment, defaultDate, defaultStart
     setSearchQuery(`${patient.nom} ${patient.prenom} (${patient.id})`)
     setFormData({ ...formData, patientId: patient._id })
     setShowDropdown(false)
+  }
+
+  const handleToggleMode = () => {
+    setIsNewPatientMode(!isNewPatientMode)
+    // Reset des données quand on change de mode
+    setSearchQuery('')
+    setSelectedPatient(null)
+    setFormData({ ...formData, patientId: '' })
+    setNewPatientData({
+      nom: '',
+      prenom: '',
+      dateNaissance: '',
+      telephone: '',
+      email: '',
+      adresse: '',
+    })
+  }
+
+  const handleNewPatientChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setNewPatientData({ ...newPatientData, [e.target.name]: e.target.value })
   }
 
   // Click outside to close dropdown
@@ -148,72 +195,202 @@ export default function AppointmentForm({ appointment, defaultDate, defaultStart
           </div>
 
           <form onSubmit={handleSubmit} className="p-6 space-y-5">
-            {/* Patient Search */}
-            <div className="relative" ref={searchInputRef}>
-              <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-2">
-                <Users className="w-4 h-4 text-gray-500" />
-                Patient *
-              </label>
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-                <input
-                  type="text"
-                  value={searchQuery}
-                  onChange={handleSearchChange}
-                  onFocus={() => searchQuery.length >= 2 && setShowDropdown(true)}
-                  placeholder="Rechercher par nom, prénom, téléphone ou ID..."
-                  required={!formData.patientId}
-                  className="w-full pl-11 pr-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
-                />
-              </div>
-              
-              {/* Dropdown résultats */}
-              {showDropdown && (
-                <div className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-64 overflow-y-auto">
-                  {isSearching ? (
-                    <div className="p-4 text-center text-gray-500">
-                      <div className="animate-spin w-5 h-5 border-2 border-gray-300 border-t-gray-600 rounded-full mx-auto mb-2"></div>
-                      <span className="text-sm">Recherche...</span>
-                    </div>
-                  ) : searchResults && searchResults.length > 0 ? (
-                    <div>
-                      {searchResults.map((patient) => (
-                        <button
-                          key={patient._id}
-                          type="button"
-                          onClick={() => handleSelectPatient(patient)}
-                          className="w-full px-4 py-2.5 text-left hover:bg-gray-50 transition-colors border-b border-gray-100 last:border-b-0"
-                        >
-                          <div className="font-medium text-gray-900">
-                            {patient.nom} {patient.prenom}
-                          </div>
-                          <div className="text-sm text-gray-500 flex items-center gap-4 mt-0.5">
-                            <span>ID: {patient.id}</span>
-                            <span>Tel: {patient.telephone}</span>
-                          </div>
-                        </button>
-                      ))}
-                    </div>
-                  ) : searchQuery.length >= 2 ? (
-                    <div className="p-4 text-center text-gray-500">
-                      <span className="text-sm">Aucun patient trouvé</span>
-                    </div>
-                  ) : null}
+            {/* Patient Selection - Mode Toggle */}
+            {!appointment && (
+              <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg border border-gray-200">
+                <div className="flex items-center gap-2 text-sm text-gray-600">
+                  <Users className="w-4 h-4" />
+                  <span className="font-medium">
+                    {isNewPatientMode ? 'Créer un nouveau patient' : 'Rechercher un patient existant'}
+                  </span>
                 </div>
-              )}
-              
-              {selectedPatient && (
-                <div className="mt-2 p-3 bg-blue-50 border border-blue-200 rounded-lg text-sm">
-                  <div className="flex items-center gap-2">
-                    <Users className="w-4 h-4 text-blue-600" />
-                    <div>
-                      <span className="font-medium text-gray-900">{selectedPatient.nom} {selectedPatient.prenom}</span>
-                      <span className="text-gray-500 ml-2">(ID: {selectedPatient.id})</span>
+                <button
+                  type="button"
+                  onClick={handleToggleMode}
+                  className="flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                >
+                  {isNewPatientMode ? (
+                    <>
+                      <Search className="w-4 h-4" />
+                      Rechercher existant
+                    </>
+                  ) : (
+                    <>
+                      <UserPlus className="w-4 h-4" />
+                      Nouveau patient
+                    </>
+                  )}
+                </button>
+              </div>
+            )}
+
+            {/* Mode: Recherche Patient Existant */}
+            {!isNewPatientMode && (
+              <div className="relative" ref={searchInputRef}>
+                <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-2">
+                  <Users className="w-4 h-4 text-gray-500" />
+                  Patient *
+                </label>
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                  <input
+                    type="text"
+                    value={searchQuery}
+                    onChange={handleSearchChange}
+                    onFocus={() => searchQuery.length >= 2 && setShowDropdown(true)}
+                    placeholder="Rechercher par nom, prénom, téléphone ou ID..."
+                    required={!formData.patientId && !appointment}
+                    className="w-full pl-11 pr-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                  />
+                </div>
+                
+                {/* Dropdown résultats */}
+                {showDropdown && (
+                  <div className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-64 overflow-y-auto">
+                    {isSearching ? (
+                      <div className="p-4 text-center text-gray-500">
+                        <div className="animate-spin w-5 h-5 border-2 border-gray-300 border-t-gray-600 rounded-full mx-auto mb-2"></div>
+                        <span className="text-sm">Recherche...</span>
+                      </div>
+                    ) : searchResults && searchResults.length > 0 ? (
+                      <div>
+                        {searchResults.map((patient) => (
+                          <button
+                            key={patient._id}
+                            type="button"
+                            onClick={() => handleSelectPatient(patient)}
+                            className="w-full px-4 py-2.5 text-left hover:bg-gray-50 transition-colors border-b border-gray-100 last:border-b-0"
+                          >
+                            <div className="font-medium text-gray-900">
+                              {patient.nom} {patient.prenom}
+                            </div>
+                            <div className="text-sm text-gray-500 flex items-center gap-4 mt-0.5">
+                              <span>ID: {patient.id}</span>
+                              <span>Tel: {patient.telephone}</span>
+                            </div>
+                          </button>
+                        ))}
+                      </div>
+                    ) : searchQuery.length >= 2 ? (
+                      <div className="p-4 text-center text-gray-500">
+                        <span className="text-sm">Aucun patient trouvé</span>
+                      </div>
+                    ) : null}
+                  </div>
+                )}
+                
+                {selectedPatient && (
+                  <div className="mt-2 p-3 bg-blue-50 border border-blue-200 rounded-lg text-sm">
+                    <div className="flex items-center gap-2">
+                      <Users className="w-4 h-4 text-blue-600" />
+                      <div>
+                        <span className="font-medium text-gray-900">{selectedPatient.nom} {selectedPatient.prenom}</span>
+                        <span className="text-gray-500 ml-2">(ID: {selectedPatient.id})</span>
+                      </div>
                     </div>
                   </div>
+                )}
+              </div>
+            )}
+
+            {/* Mode: Créer Nouveau Patient */}
+            {isNewPatientMode && (
+              <div className="space-y-4 p-4 bg-blue-50/50 rounded-xl border border-blue-100">
+                <div className="flex items-center gap-2 text-sm font-semibold text-blue-900 mb-2">
+                  <UserPlus className="w-4 h-4" />
+                  Informations du nouveau patient
                 </div>
-              )}
-            </div>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="text-sm font-medium text-gray-700 mb-1 block">
+                      Nom *
+                    </label>
+                    <input
+                      type="text"
+                      name="nom"
+                      value={newPatientData.nom}
+                      onChange={handleNewPatientChange}
+                      required
+                      placeholder="Nom du patient"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors bg-white"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="text-sm font-medium text-gray-700 mb-1 block">
+                      Prénom *
+                    </label>
+                    <input
+                      type="text"
+                      name="prenom"
+                      value={newPatientData.prenom}
+                      onChange={handleNewPatientChange}
+                      required
+                      placeholder="Prénom du patient"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors bg-white"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="text-sm font-medium text-gray-700 mb-1 block">
+                      Date de naissance *
+                    </label>
+                    <input
+                      type="date"
+                      name="dateNaissance"
+                      value={newPatientData.dateNaissance}
+                      onChange={handleNewPatientChange}
+                      required
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors bg-white"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="text-sm font-medium text-gray-700 mb-1 block">
+                      Téléphone *
+                    </label>
+                    <input
+                      type="tel"
+                      name="telephone"
+                      value={newPatientData.telephone}
+                      onChange={handleNewPatientChange}
+                      required
+                      placeholder="0612345678"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors bg-white"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="text-sm font-medium text-gray-700 mb-1 block">
+                      Email
+                    </label>
+                    <input
+                      type="email"
+                      name="email"
+                      value={newPatientData.email}
+                      onChange={handleNewPatientChange}
+                      placeholder="email@exemple.fr"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors bg-white"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="text-sm font-medium text-gray-700 mb-1 block">
+                      Adresse
+                    </label>
+                    <input
+                      type="text"
+                      name="adresse"
+                      value={newPatientData.adresse}
+                      onChange={handleNewPatientChange}
+                      placeholder="Adresse complète"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors bg-white"
+                    />
+                  </div>
+                </div>
+              </div>
+            )}
 
             {/* Date & Horaires */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">

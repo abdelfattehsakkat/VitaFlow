@@ -4,6 +4,7 @@ import { getNextSequence } from './Counter';
 interface ISoin {
   _id: mongoose.Types.ObjectId;
   date: Date;
+  dent?: string;
   description: string;
   honoraire: number;
   recu: number;
@@ -35,6 +36,11 @@ const soinSchema = new Schema<ISoin>({
     type: Date,
     required: true,
     default: Date.now
+  },
+  dent: {
+    type: String,
+    required: false,
+    trim: true
   },
   description: {
     type: String,
@@ -145,20 +151,20 @@ patientSchema.pre('save', async function() {
   }
 });
 
-// Pre-save: populate medecinNom si nouveau soin
-patientSchema.pre('save', async function() {
-  if (this.isModified('soins')) {
-    const User = mongoose.model('User');
-    for (const soin of this.soins) {
-      if (!soin.medecinNom && soin.medecinId) {
-        const medecin = await User.findById(soin.medecinId).select('nom prenom');
-        if (medecin) {
-          soin.medecinNom = `${medecin.nom} ${medecin.prenom}`;
-        }
-      }
-    }
-  }
-});
+// Pre-save: populate medecinNom si nouveau soin (désactivé)
+// patientSchema.pre('save', async function() {
+//   if (this.isModified('soins')) {
+//     const User = mongoose.model('User');
+//     for (const soin of this.soins) {
+//       if (!soin.medecinNom && soin.medecinId) {
+//         const medecin = await User.findById(soin.medecinId).select('nom prenom');
+//         if (medecin) {
+//           soin.medecinNom = `${medecin.nom} ${medecin.prenom}`;
+//         }
+//       }
+//     }
+//   }
+// });
 
 patientSchema.set('toJSON', { virtuals: true });
 patientSchema.set('toObject', { virtuals: true });
