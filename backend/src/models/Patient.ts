@@ -7,8 +7,6 @@ interface ISoin {
   description: string;
   honoraire: number;
   recu: number;
-  medecinId: mongoose.Types.ObjectId;
-  medecinNom: string;
   createdAt: Date;
 }
 
@@ -52,15 +50,6 @@ const soinSchema = new Schema<ISoin>({
     type: Schema.Types.Mixed,
     required: false,
     default: 0
-  },
-  medecinId: {
-    type: Schema.Types.ObjectId,
-    ref: 'User',
-    required: true
-  },
-  medecinNom: {
-    type: String,
-    required: false
   },
   createdAt: {
     type: Date,

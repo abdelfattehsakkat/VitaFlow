@@ -3,8 +3,6 @@ import mongoose, { Schema, Document } from 'mongoose';
 export interface IRendezVous extends Document {
   patientId: mongoose.Types.ObjectId;
   patientNom: string;
-  medecinId: mongoose.Types.ObjectId;
-  medecinNom: string;
   date: Date;
   heureDebut: string;
   heureFin: string;
@@ -23,15 +21,6 @@ const rendezvousSchema = new Schema<IRendezVous>({
     required: true
   },
   patientNom: {
-    type: String,
-    required: false
-  },
-  medecinId: {
-    type: Schema.Types.ObjectId,
-    ref: 'User',
-    required: true
-  },
-  medecinNom: {
     type: String,
     required: false
   },
@@ -71,7 +60,7 @@ const rendezvousSchema = new Schema<IRendezVous>({
 });
 
 // Indexes pour performance
-rendezvousSchema.index({ date: 1, medecinId: 1 });
+rendezvousSchema.index({ date: 1 });
 rendezvousSchema.index({ patientId: 1, date: -1 });
 
 // Validation custom: heureDebut < heureFin

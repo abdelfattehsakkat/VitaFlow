@@ -15,7 +15,6 @@ import {
   Trash2,
 } from 'lucide-react'
 import api from '../lib/api'
-import { useAuthStore } from '../store/authStore'
 import type { Patient, ApiResponse, Soin } from '../types'
 
 export default function PatientDetailsPage() {
@@ -282,12 +281,6 @@ export default function PatientDetailsPage() {
                           <span className="text-gray-500">Reçu:</span>
                           <span className="px-2.5 py-1 bg-green-50 text-green-700 font-semibold rounded-lg">{soin.recu.toFixed(2)} TND</span>
                         </div>
-                        {soin.medecinNom && (
-                          <div className="flex items-center gap-2">
-                            <span className="text-gray-500">Médecin:</span>
-                            <span className="font-medium text-gray-900">{soin.medecinNom}</span>
-                          </div>
-                        )}
                       </div>
                     </div>
                     <div className="flex gap-2 ml-4 opacity-0 group-hover:opacity-100 transition-opacity duration-150">
@@ -327,7 +320,6 @@ function SoinForm({
   onClose: () => void
 }) {
   const queryClient = useQueryClient()
-  const user = useAuthStore((state) => state.user)
   const [formData, setFormData] = useState({
     date: soin?.date.split('T')[0] || new Date().toISOString().split('T')[0],
     description: soin?.description || '',
@@ -341,7 +333,6 @@ function SoinForm({
         ...data,
         honoraire: parseFloat(data.honoraire),
         recu: parseFloat(data.recu),
-        medecinId: user?.id,
       }
       if (soin) {
         return api.patch(`/patients/${patientId}/soins/${soin._id}`, payload)

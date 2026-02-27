@@ -16,10 +16,10 @@ export default function AppointmentsPage() {
 
   // Fetch appointments
   const { data, isLoading } = useQuery({
-    queryKey: ['rendez-vous', selectedDate],
+    queryKey: ['rendez-vous'],
     queryFn: async () => {
-      const response = await api.get<ApiResponse<RendezVous[]>>('/rendez-vous')
-      return response.data.data
+      const response = await api.get<ApiResponse<{ rendezVous: RendezVous[]; pagination: PaginationMeta }>>('/rendez-vous')
+      return response.data.data.rendezVous
     },
   })
 
@@ -282,7 +282,6 @@ export default function AppointmentsPage() {
                     <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Patient</th>
                     <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Date</th>
                     <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Heure</th>
-                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Motif</th>
                     <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Statut</th>
                     <th className="px-6 py-4 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider">Actions</th>
                   </tr>
@@ -292,16 +291,10 @@ export default function AppointmentsPage() {
                     <tr key={rdv._id} className="hover:bg-gray-50/50 transition-colors group">
                       <td className="px-6 py-4">
                         <div className="font-medium text-gray-900">{rdv.patientNom}</div>
-                        <div className="text-sm text-gray-500">{rdv.medecinNom}</div>
                       </td>
-                      <td className="px-6 py-4 text-sm text-gray-900">
-                        {formatDate(rdv.date)}
-                      </td>
+                      <td className="px-6 py-4 text-sm text-gray-900">{formatDate(rdv.date)}</td>
                       <td className="px-6 py-4 text-sm text-gray-900">
                         {formatTime(rdv.heureDebut)} - {formatTime(rdv.heureFin)}
-                      </td>
-                      <td className="px-6 py-4 text-sm text-gray-900">
-                        {rdv.motif || 'Consultation'}
                       </td>
                       <td className="px-6 py-4">
                         <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium border ${getStatutBadgeClass(rdv.statut)}`}>

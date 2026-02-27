@@ -9,7 +9,6 @@ export const getRendezVous = async (req: AuthRequest, res: Response) => {
   try {
     const { 
       date, 
-      medecinId, 
       patientId, 
       statut,
       startDate,
@@ -36,7 +35,6 @@ export const getRendezVous = async (req: AuthRequest, res: Response) => {
       };
     }
     
-    if (medecinId) query.medecinId = medecinId;
     if (patientId) query.patientId = patientId;
     if (statut) query.statut = statut;
     
@@ -45,7 +43,6 @@ export const getRendezVous = async (req: AuthRequest, res: Response) => {
     const [rendezVous, total] = await Promise.all([
       RendezVous.find(query)
         .populate('patientId', 'nom prenom telephone')
-        .populate('medecinId', 'nom prenom')
         .sort({ date: 1, heureDebut: 1 })
         .skip(skip)
         .limit(Number(limit)),
@@ -77,8 +74,7 @@ export const getRendezVousById = async (req: AuthRequest, res: Response) => {
     const { id } = req.params;
     
     const rdv = await RendezVous.findById(id)
-      .populate('patientId', 'nom prenom telephone adresse')
-      .populate('medecinId', 'nom prenom');
+      .populate('patientId', 'nom prenom telephone adresse');
     
     if (!rdv) {
       return res.status(404).json({
@@ -98,30 +94,22 @@ export const getRendezVousById = async (req: AuthRequest, res: Response) => {
  */
 export const createRendezVous = async (req: AuthRequest, res: Response) => {
   try {
-    const { patientId, medecinId, date, heureDebut, heureFin, motif, notes } = req.body;
+    const { patientId, date, heureDebut, heureFin, motif, notes } = req.body;
     
-    // Récupérer les noms automatiquement
+    // Récupérer le nom du patient automatiquement
     const Patient = (await import('../models/Patient')).default;
-    const User = (await import('../models/User')).default;
     
-    const [patient, medecin] = await Promise.all([
-      Patient.findById(patientId).select('nom prenom'),
-      User.findById(medecinId).select('nom prenom')
-    ]);
+    const patient = await Patient.findById(patientId).select('nom prenom');
     
     if (!patient) {
       return res.status(404).json({ success: false, message: 'Patient non trouvé' });
     }
-    if (!medecin) {
-      return res.status(404).json({ success: false, message: 'Médecin non trouvé' });
-    }
     
     const patientNom = `${patient.nom} ${patient.prenom}`;
-    const medecinNom = `Dr. ${medecin.nom} ${medecin.prenom}`;
     
-    // Vérifier chevauchement pour ce médecin
+    // Vérifier chevauchement pour le même patient
     const overlapping = await RendezVous.findOne({
-      medecinId,
+      patientId,
       date: new Date(date),
       statut: { $ne: 'annule' },
       $or: [
@@ -145,8 +133,6 @@ export const createRendezVous = async (req: AuthRequest, res: Response) => {
     const rdv = await RendezVous.create({
       patientId,
       patientNom,
-      medecinId,
-      medecinNom,
       date,
       heureDebut,
       heureFin,
@@ -156,7 +142,6 @@ export const createRendezVous = async (req: AuthRequest, res: Response) => {
     });
     
     await rdv.populate('patientId', 'nom prenom telephone');
-    await rdv.populate('medecinId', 'nom prenom');
     
     res.status(201).json({
       success: true,
@@ -164,7 +149,7 @@ export const createRendezVous = async (req: AuthRequest, res: Response) => {
       data: rdv
     });
   } catch (error: any) {
-    res.status(400).json({ success: false, message: error.message });
+    res.status(400).json({ success: false, message: error.message || 'Erreur lors de la création du rendez-vous' });
   }
 };
 
@@ -189,7 +174,7 @@ export const updateRendezVous = async (req: AuthRequest, res: Response) => {
       
       const overlapping = await RendezVous.findOne({
         _id: { $ne: id },
-        medecinId: rdv.medecinId,
+        patientId: rdv.patientId,
         date: newDate,
         statut: { $ne: 'annule' },
         $or: [
@@ -217,7 +202,6 @@ export const updateRendezVous = async (req: AuthRequest, res: Response) => {
     
     await rdv.save();
     await rdv.populate('patientId', 'nom prenom telephone');
-    await rdv.populate('medecinId', 'nom prenom');
     
     res.json({
       success: true,

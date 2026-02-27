@@ -35,7 +35,7 @@ export default function AppointmentCalendar({ appointments, onSelectEvent, onSel
     const endDateTime = new Date(`${dateStr}T${rdv.heureFin}:00`)
     
     return {
-      title: `${rdv.patientNom} - ${rdv.motif || 'Consultation'}`,
+      title: rdv.patientNom,
       start: startDateTime,
       end: endDateTime,
       resource: rdv,

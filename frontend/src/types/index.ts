@@ -28,8 +28,6 @@ interface Soin {
   description: string
   honoraire: number
   recu: number
-  medecinId?: string
-  medecinNom?: string
   createdAt: string
 }
 
@@ -56,8 +54,6 @@ interface RendezVous {
   _id: string
   patientId: string
   patientNom: string
-  medecinId: string
-  medecinNom: string
   date: string
   heureDebut: string
   heureFin: string

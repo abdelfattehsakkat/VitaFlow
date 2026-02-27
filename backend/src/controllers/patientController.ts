@@ -175,21 +175,11 @@ export const updatePatient = async (req: AuthRequest, res: Response) => {
 export const addSoin = async (req: AuthRequest, res: Response) => {
   try {
     const { id } = req.params;
-    const { date, description, honoraire, recu, medecinId } = req.body;
+    const { date, description, honoraire, recu } = req.body;
     
     const patient = await Patient.findById(id);
     if (!patient) {
       return res.status(404).json({ success: false, message: 'Patient non trouvé' });
-    }
-    
-    // Récupérer le nom du médecin automatiquement
-    let medecinNom = '';
-    if (medecinId) {
-      const User = (await import('../models/User')).default;
-      const medecin = await User.findById(medecinId);
-      if (medecin) {
-        medecinNom = `Dr. ${medecin.nom} ${medecin.prenom}`;
-      }
     }
     
     patient.soins.push({
@@ -197,8 +187,6 @@ export const addSoin = async (req: AuthRequest, res: Response) => {
       description,
       honoraire,
       recu,
-      medecinId,
-      medecinNom,
       createdAt: new Date()
     } as any);
     
