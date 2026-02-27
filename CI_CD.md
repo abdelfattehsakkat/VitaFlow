@@ -171,7 +171,7 @@ nano .env  # Éditer les variables
 ```bash
 # GitHub
 GITHUB_REPOSITORY=votre-username/vitaflow
-VERSION=latest  # ou v1.0.0 pour une version spécifique
+VERSION=main  # ou v1.0.0 pour une version spécifique
 
 # MongoDB
 MONGO_ROOT_USERNAME=admin

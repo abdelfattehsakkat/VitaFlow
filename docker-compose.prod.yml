@@ -29,7 +29,7 @@ services:
 
   # Backend API (depuis GitHub Container Registry)
   backend:
-    image: ghcr.io/${GITHUB_REPOSITORY}/backend:${VERSION:-latest}
+    image: ghcr.io/${GITHUB_REPOSITORY}/backend:${VERSION:-main}
     container_name: vitaflow-backend-prod
     restart: always
     environment:
@@ -55,7 +55,7 @@ services:
 
   # Frontend Web App (depuis GitHub Container Registry)
   frontend:
-    image: ghcr.io/${GITHUB_REPOSITORY}/frontend:${VERSION:-latest}
+    image: ghcr.io/${GITHUB_REPOSITORY}/frontend:${VERSION:-main}
     container_name: vitaflow-frontend-prod
     restart: always
     ports:

@@ -145,7 +145,7 @@ nano .env  # Éditez avec vos valeurs de production
 ```bash
 # GitHub (remplacez par votre username)
 GITHUB_REPOSITORY=VOTRE-USERNAME/vitaflow
-VERSION=latest  # ou une version spécifique comme v1.0.0
+VERSION=main  # ou une version spécifique comme v1.0.0
 
 # MongoDB - CHANGEZ CES VALEURS !
 MONGO_ROOT_USERNAME=admin
