@@ -475,9 +475,8 @@ Pour plus de détails sur le déploiement, consultez :
 
 - **[🚀 Guide Rapide VPS](./DEPLOY_VPS.md)** - Déploiement en 5 étapes sur votre VPS
 - **[🔄 Guide CI/CD](./CI_CD.md)** - Pipeline GitHub Actions et workflow complet
+- **[� Configuration Ports](./PORTS_VPS.md)** - Gestion des ports si plusieurs applications sur le VPS
 - **[📖 Guide Complet](./DEPLOYMENT.md)** - Documentation exhaustive (HTTPS, sauvegardes, monitoring)
-
-Pour plus de détails, consultez **[DEPLOYMENT.md](DEPLOYMENT.md)** - Guide complet de déploiement.
 
 ## 📖 Documentation
 

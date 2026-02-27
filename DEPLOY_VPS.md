@@ -60,6 +60,7 @@ VERSION=latest
 MONGO_ROOT_USERNAME=admin
 MONGO_ROOT_PASSWORD=VotreMotDePasseTresSecurise123!
 MONGO_DB=cabinet
+MONGO_PORT=27018  # 27018 par défaut (27017 si pas d'autre MongoDB)
 
 # JWT - Générez des secrets forts !
 JWT_SECRET=$(openssl rand -base64 48)
@@ -70,6 +71,8 @@ JWT_EXPIRES_IN=7d
 BACKEND_PORT=3001
 FRONTEND_PORT=80
 ```
+
+**⚠️ Port MongoDB** : Par défaut `27018` pour éviter les conflits. Si vous n'avez pas d'autre MongoDB, utilisez `27017`. Voir [PORTS_VPS.md](./PORTS_VPS.md) pour gérer les conflits de ports.
 
 **Générer les secrets JWT :**
 

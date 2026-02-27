@@ -147,9 +147,12 @@ nano .env  # Éditer les secrets !
 # À modifier OBLIGATOIREMENT :
 GITHUB_REPOSITORY=votre-username/VitaFlow
 MONGO_ROOT_PASSWORD=VotreMotDePasseSecurise123!
+MONGO_PORT=27018  # 27017 si pas d'autre MongoDB, 27018 si conflit
 JWT_SECRET=$(openssl rand -base64 48)
 JWT_REFRESH_SECRET=$(openssl rand -base64 48)
 ```
+
+**⚠️ Ports VPS** : Si vous avez d'autres applications, voir [PORTS_VPS.md](./PORTS_VPS.md) pour éviter les conflits.
 
 ### Déploiement
 ```bash
