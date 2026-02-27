@@ -84,6 +84,7 @@ Avant de créer un nouveau composant, vérifier si ces patterns existent :
 
 | Composant | Fichier | Usage |
 |-----------|---------|-------|
+| **Page Header Premium** | `PatientsPage.tsx` | **En-tête avec badge icône + compteur + quick stats** |
 | Bouton Gradient | `DashboardPage.tsx`, `PatientsPage.tsx` | CTA principaux |
 | Carte Stats | `DashboardPage.tsx` | Statistiques |
 | Table Interactive | `PatientsPage.tsx` | Listes de données |
@@ -116,6 +117,39 @@ Avant de créer un nouveau composant, vérifier si ces patterns existent :
   className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all duration-150"
 />
 ```
+
+### Page Header Premium (Nouveau Pattern)
+```tsx
+<div className="flex items-start gap-6">
+  {/* Badge icône 16x16 */}
+  <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center shadow-lg shadow-blue-500/30">
+    <Users className="w-8 h-8 text-white" />
+  </div>
+  
+  <div className="space-y-2">
+    <div className="flex items-center gap-4">
+      <h1 className="text-4xl font-semibold tracking-tight text-gray-900">Patients</h1>
+      {/* Badge compteur dynamique */}
+      <span className="px-4 py-1.5 bg-gradient-to-br from-blue-50 to-blue-100 text-blue-700 text-sm font-semibold rounded-full border border-blue-200/60 shadow-sm">
+        200 patients
+      </span>
+    </div>
+    <p className="text-base text-gray-500 max-w-2xl">
+      Gérez les dossiers médicaux, consultations et historique de vos patients
+    </p>
+    
+    {/* Quick stats avec indicateur animé */}
+    <div className="flex items-center gap-6 pt-2">
+      <div className="flex items-center gap-2 text-sm text-gray-600">
+        <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
+        <span className="font-medium">10</span>
+        <span className="text-gray-400">sur cette page</span>
+      </div>
+    </div>
+  </div>
+</div>
+```
+**Voir documentation complète dans [DESIGN_SYSTEM.md](../frontend/DESIGN_SYSTEM.md#page-header-premium-nouveau-pattern)**
 
 ## 🚫 Anti-Patterns
 

@@ -538,6 +538,83 @@ w-6 h-6   /* Headers, emphasis */
 w-12 h-12 /* Avatars, grandes icônes */
 ```
 
+### Page Header Premium (Nouveau Pattern)
+
+**En-tête de page avec badge icône, compteur dynamique et quick stats**
+
+```tsx
+<div className="flex flex-col gap-6">
+  <div className="flex justify-between items-start">
+    <div className="flex items-start gap-6">
+      {/* Icon Badge */}
+      <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center shadow-lg shadow-blue-500/30">
+        <Users className="w-8 h-8 text-white" />
+      </div>
+      
+      {/* Title & Description */}
+      <div className="space-y-2">
+        <div className="flex items-center gap-4">
+          <h1 className="text-4xl font-semibold tracking-tight text-gray-900">Patients</h1>
+          {/* Badge compteur dynamique */}
+          <span className="px-4 py-1.5 bg-gradient-to-br from-blue-50 to-blue-100 text-blue-700 text-sm font-semibold rounded-full border border-blue-200/60 shadow-sm">
+            200 patients
+          </span>
+        </div>
+        <p className="text-base text-gray-500 max-w-2xl">
+          Gérez les dossiers médicaux, consultations et historique de vos patients
+        </p>
+        
+        {/* Quick Stats */}
+        <div className="flex items-center gap-6 pt-2">
+          <div className="flex items-center gap-2 text-sm text-gray-600">
+            <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
+            <span className="font-medium">10</span>
+            <span className="text-gray-400">sur cette page</span>
+          </div>
+          <div className="flex items-center gap-2 text-sm text-gray-600">
+            <Calendar className="w-4 h-4 text-gray-400" />
+            <span>Page 1 / 20</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    {/* CTA Button */}
+    <button className="group flex items-center gap-2 px-6 py-3 bg-gradient-to-b from-blue-500 to-blue-600 text-white rounded-xl hover:from-blue-600 hover:to-blue-700 shadow-lg shadow-blue-500/30 hover:shadow-xl hover:shadow-blue-500/40 transition-all duration-200 hover:-translate-y-0.5 font-medium">
+      <Plus className="w-5 h-5 transition-transform group-hover:rotate-90 duration-200" />
+      Nouveau Patient
+    </button>
+  </div>
+</div>
+```
+
+**Caractéristiques :**
+- **Badge icône** : 16x16, gradient avec shadow colorée
+- **Icône** : 8x8 (grande pour impact visuel)
+- **Badge compteur** : Gradient bleu subtil, bordure, shadow-sm
+- **Pluralization** : Afficher "patient" ou "patients" selon le nombre
+- **Description** : max-w-2xl pour lisibilité optimale
+- **Quick stats** : 
+  * Indicateur vert animé (pulse) pour les données actives
+  * Icône Calendar pour la pagination
+  * Couleurs subtiles (gray-600, gray-400)
+- **Espacement** : gap-6 entre sections, gap-4 entre éléments inline
+
+**Variantes de couleurs pour les badges icônes :**
+```tsx
+/* Patients (bleu) */
+from-blue-500 to-blue-600 shadow-blue-500/30
+
+/* Rendez-vous (violet) */
+from-violet-500 to-violet-600 shadow-violet-500/30
+
+/* Statistiques (emerald) */
+from-emerald-500 to-emerald-600 shadow-emerald-500/30
+
+/* Utilisateurs (indigo) */
+from-indigo-500 to-indigo-600 shadow-indigo-500/30
+```
+
 ---
 
 ## 🌈 Exemples Complets

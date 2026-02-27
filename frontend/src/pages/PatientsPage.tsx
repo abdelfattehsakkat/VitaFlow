@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { Plus, Search, Edit2, Trash2, User, Eye } from 'lucide-react'
+import { Plus, Search, Edit2, Trash2, User, Eye, Users, Calendar } from 'lucide-react'
 import api from '../lib/api'
 import type { Patient, ApiResponse, PaginationMeta } from '../types'
 
@@ -73,13 +73,46 @@ export default function PatientsPage() {
 
   return (
     <div className="space-y-8">
-      {/* Header - Apple Style */}
+      {/* Header - Enhanced Premium Style */}
       <div className="flex flex-col gap-6">
         <div className="flex justify-between items-start">
-          <div className="space-y-1">
-            <h1 className="text-4xl font-semibold tracking-tight text-gray-900">Patients</h1>
-            <p className="text-base text-gray-500">Gérer les dossiers patients</p>
+          <div className="flex items-start gap-6">
+            {/* Icon Badge */}
+            <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center shadow-lg shadow-blue-500/30">
+              <Users className="w-8 h-8 text-white" />
+            </div>
+            
+            {/* Title & Description */}
+            <div className="space-y-2">
+              <div className="flex items-center gap-4">
+                <h1 className="text-4xl font-semibold tracking-tight text-gray-900">Patients</h1>
+                {data && (
+                  <span className="px-4 py-1.5 bg-gradient-to-br from-blue-50 to-blue-100 text-blue-700 text-sm font-semibold rounded-full border border-blue-200/60 shadow-sm">
+                    {data.pagination.total} {data.pagination.total > 1 ? 'patients' : 'patient'}
+                  </span>
+                )}
+              </div>
+              <p className="text-base text-gray-500 max-w-2xl">
+                Gérez les dossiers médicaux, consultations et historique de vos patients
+              </p>
+              
+              {/* Quick Stats */}
+              {data && data.patients.length > 0 && (
+                <div className="flex items-center gap-6 pt-2">
+                  <div className="flex items-center gap-2 text-sm text-gray-600">
+                    <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
+                    <span className="font-medium">{data.patients.length}</span>
+                    <span className="text-gray-400">sur cette page</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-sm text-gray-600">
+                    <Calendar className="w-4 h-4 text-gray-400" />
+                    <span>Page {data.pagination.currentPage} / {data.pagination.totalPages}</span>
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
+          
           <button
             onClick={handleAdd}
             className="group flex items-center gap-2 px-6 py-3 bg-gradient-to-b from-blue-500 to-blue-600 text-white rounded-xl hover:from-blue-600 hover:to-blue-700 shadow-lg shadow-blue-500/30 hover:shadow-xl hover:shadow-blue-500/40 transition-all duration-200 hover:-translate-y-0.5 font-medium"
