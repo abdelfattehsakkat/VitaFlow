@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { Calendar, Plus, Clock, Users, CheckCircle2, XCircle, AlertCircle, Filter, Edit2, Trash2 } from 'lucide-react'
+import { Calendar, Plus, Clock, CheckCircle2, Edit2, Trash2 } from 'lucide-react'
+import type { View } from 'react-big-calendar'
 import api from '../lib/api'
 import type { RendezVous, ApiResponse, PaginationMeta } from '../types'
 import AppointmentCalendar from '../components/AppointmentCalendar'
@@ -9,8 +10,12 @@ import ConfirmDialog from '../components/ConfirmDialog'
 
 export default function AppointmentsPage() {
   const queryClient = useQueryClient()
-  const [selectedView, setSelectedView] = useState<'calendar' | 'list'>('calendar')
-  const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0])
+  const [selectedView] = useState<'calendar' | 'list'>('calendar')
+  const [calendarDate, setCalendarDate] = useState(new Date())
+  // Vue par défaut : 'day' sur mobile (< 768px), 'week' sur desktop
+  const [calendarView, setCalendarView] = useState<View>(() => {
+    return typeof window !== 'undefined' && window.innerWidth < 768 ? 'day' : 'week'
+  })
   const [showForm, setShowForm] = useState(false)
   const [selectedAppointment, setSelectedAppointment] = useState<RendezVous | null>(null)
   const [slotInfo, setSlotInfo] = useState<{ start: Date; end: Date } | null>(null)
@@ -113,44 +118,44 @@ export default function AppointmentsPage() {
   }
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-4">
       {/* Header - Premium Style */}
-      <div className="flex flex-col gap-6">
+      <div className="flex flex-col gap-4 sm:gap-6">
         <div className="flex justify-between items-start">
-          <div className="flex items-start gap-6">
+          <div className="flex items-start gap-3 sm:gap-6">
             {/* Icon Badge */}
-            <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-violet-500 to-violet-600 flex items-center justify-center shadow-lg shadow-violet-500/30">
-              <Calendar className="w-8 h-8 text-white" />
+            <div className="w-10 h-10 sm:w-16 sm:h-16 rounded-xl sm:rounded-2xl bg-gradient-to-br from-violet-500 to-violet-600 flex items-center justify-center shadow-lg shadow-violet-500/30">
+              <Calendar className="w-5 h-5 sm:w-8 sm:h-8 text-white" />
             </div>
             
             {/* Title & Description */}
-            <div className="space-y-2">
-              <div className="flex items-center gap-4">
-                <h1 className="text-4xl font-semibold tracking-tight text-gray-900">Rendez-vous</h1>
-                <span className="px-4 py-1.5 bg-gradient-to-br from-violet-50 to-violet-100 text-violet-700 text-sm font-semibold rounded-full border border-violet-200/60 shadow-sm">
-                  {totalAppointments} {totalAppointments > 1 ? 'rendez-vous' : 'rendez-vous'}
+            <div className="space-y-1 sm:space-y-2">
+              <div className="flex items-center gap-2 sm:gap-4">
+                <h1 className="text-2xl sm:text-4xl font-semibold tracking-tight text-gray-900">Rendez-vous</h1>
+                <span className="px-2 py-1 sm:px-4 sm:py-1.5 bg-gradient-to-br from-violet-50 to-violet-100 text-violet-700 text-xs sm:text-sm font-semibold rounded-full border border-violet-200/60 shadow-sm">
+                  {totalAppointments}
                 </span>
               </div>
-              <p className="text-base text-gray-500 max-w-2xl">
+              <p className="text-sm sm:text-base text-gray-500 max-w-2xl hidden sm:block">
                 Gérez l'agenda du cabinet, planifiez et suivez les consultations
               </p>
               
               {/* Quick Stats */}
-              <div className="flex items-center gap-6 pt-2">
-                <div className="flex items-center gap-2 text-sm text-gray-600">
+              <div className="flex items-center gap-3 sm:gap-6 pt-1 sm:pt-2">
+                <div className="flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm text-gray-600">
                   <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
                   <span className="font-medium">{stats.today}</span>
-                  <span className="text-gray-400">aujourd'hui</span>
+                  <span className="text-gray-400 hidden sm:inline">aujourd'hui</span>
                 </div>
-                <div className="flex items-center gap-2 text-sm text-gray-600">
-                  <Clock className="w-4 h-4 text-gray-400" />
+                <div className="flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm text-gray-600">
+                  <Clock className="w-3 h-3 sm:w-4 sm:h-4 text-gray-400" />
                   <span className="font-medium">{stats.upcoming}</span>
-                  <span className="text-gray-400">à venir</span>
+                  <span className="text-gray-400 hidden sm:inline">à venir</span>
                 </div>
-                <div className="flex items-center gap-2 text-sm text-gray-600">
-                  <CheckCircle2 className="w-4 h-4 text-green-500" />
+                <div className="flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm text-gray-600 hidden md:flex">
+                  <CheckCircle2 className="w-3 h-3 sm:w-4 sm:h-4 text-green-500" />
                   <span className="font-medium">{stats.confirmed}</span>
-                  <span className="text-gray-400">confirmés</span>
+                  <span className="text-gray-400 hidden sm:inline">confirmés</span>
                 </div>
               </div>
             </div>
@@ -158,61 +163,18 @@ export default function AppointmentsPage() {
           
           <button 
             onClick={handleAddAppointment}
-            className="group flex items-center gap-2 px-6 py-3 bg-gradient-to-b from-violet-500 to-violet-600 text-white rounded-xl hover:from-violet-600 hover:to-violet-700 shadow-lg shadow-violet-500/30 hover:shadow-xl hover:shadow-violet-500/40 transition-all duration-200 hover:-translate-y-0.5 font-medium"
+            className="group flex items-center gap-2 px-3 py-2.5 sm:px-6 sm:py-3 bg-gradient-to-b from-violet-500 to-violet-600 text-white rounded-lg sm:rounded-xl hover:from-violet-600 hover:to-violet-700 shadow-lg shadow-violet-500/30 hover:shadow-xl hover:shadow-violet-500/40 transition-all duration-200 hover:-translate-y-0.5 font-medium text-sm sm:text-base"
           >
             <Plus className="w-5 h-5 transition-transform group-hover:rotate-90 duration-200" />
-            Nouveau Rendez-vous
+            <span className="hidden sm:inline">RDV</span>
           </button>
-        </div>
-
-        {/* View Toggle & Filters */}
-        <div className="flex items-center justify-between gap-4">
-          {/* View Toggle */}
-          <div className="flex items-center gap-2 p-1 bg-gray-100/80 backdrop-blur-xl rounded-xl border border-gray-200/60">
-            <button
-              onClick={() => setSelectedView('calendar')}
-              className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
-                selectedView === 'calendar'
-                  ? 'bg-white text-gray-900 shadow-sm'
-                  : 'text-gray-600 hover:text-gray-900'
-              }`}
-            >
-              <Calendar className="w-4 h-4 inline mr-2" />
-              Calendrier
-            </button>
-            <button
-              onClick={() => setSelectedView('list')}
-              className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
-                selectedView === 'list'
-                  ? 'bg-white text-gray-900 shadow-sm'
-                  : 'text-gray-600 hover:text-gray-900'
-              }`}
-            >
-              <Users className="w-4 h-4 inline mr-2" />
-              Liste
-            </button>
-          </div>
-
-          {/* Filters */}
-          <div className="flex items-center gap-3">
-            <input
-              type="date"
-              value={selectedDate}
-              onChange={(e) => setSelectedDate(e.target.value)}
-              className="px-4 py-2 bg-gray-50/80 backdrop-blur-xl border border-gray-200/60 rounded-xl focus:ring-2 focus:ring-violet-500/20 focus:border-violet-500 transition-all duration-150 text-sm"
-            />
-            <button className="flex items-center gap-2 px-4 py-2 bg-gray-50/80 backdrop-blur-xl border border-gray-200/60 rounded-xl hover:bg-white transition-all duration-150 text-sm font-medium text-gray-700">
-              <Filter className="w-4 h-4" />
-              Filtres
-            </button>
-          </div>
         </div>
       </div>
 
       {/* Main Content */}
-      <div className="bg-white/80 backdrop-blur-xl rounded-2xl shadow-sm border border-gray-200/60 overflow-hidden">
+      <div className="bg-white/80 backdrop-blur-xl rounded-xl sm:rounded-2xl shadow-sm border border-gray-200/60 overflow-hidden">
         {selectedView === 'calendar' ? (
-          <div className="p-6">
+          <div className="p-2 sm:p-3">
             {isLoading ? (
               <div className="text-center py-16">
                 <div className="animate-spin w-8 h-8 border-4 border-violet-500 border-t-transparent rounded-full mx-auto mb-4"></div>
@@ -223,6 +185,10 @@ export default function AppointmentsPage() {
                 appointments={appointments}
                 onSelectEvent={handleSelectEvent}
                 onSelectSlot={handleSelectSlot}
+                date={calendarDate}
+                onNavigate={setCalendarDate}
+                view={calendarView}
+                onView={setCalendarView}
               />
             )}
           </div>

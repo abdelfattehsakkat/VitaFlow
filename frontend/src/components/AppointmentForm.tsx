@@ -168,21 +168,21 @@ export default function AppointmentForm({ appointment, defaultDate, defaultStart
 
   return (
     <div 
-      className="fixed inset-0 flex items-center justify-center z-50 p-4"
+      className="fixed inset-0 flex items-center justify-center z-50 p-2 sm:p-4"
       onClick={onClose}
     >
       <div 
         className="max-w-2xl w-full"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="bg-white rounded-2xl shadow-xl border border-gray-200 max-h-[90vh] overflow-auto">
-          <div className="px-6 py-5 border-b border-gray-200 flex justify-between items-center sticky top-0 bg-white">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-lg bg-gray-100 flex items-center justify-center">
-                <Calendar className="w-5 h-5 text-gray-600" />
+        <div className="bg-white rounded-xl sm:rounded-2xl shadow-xl border border-gray-200 max-h-[95vh] sm:max-h-[90vh] overflow-auto">
+          <div className="px-4 py-3 sm:px-6 sm:py-5 border-b border-gray-200 flex justify-between items-center sticky top-0 bg-white z-10">
+            <div className="flex items-center gap-2 sm:gap-3">
+              <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg bg-gray-100 flex items-center justify-center">
+                <Calendar className="w-4 h-4 sm:w-5 sm:h-5 text-gray-600" />
               </div>
-              <h2 className="text-xl font-semibold text-gray-900">
-                {appointment ? 'Modifier Rendez-vous' : 'Nouveau Rendez-vous'}
+              <h2 className="text-lg sm:text-lg sm:text-xl font-semibold text-gray-900">
+                {appointment ? 'Modifier' : 'Nouveau RDV'}
               </h2>
             </div>
             <button
@@ -194,11 +194,11 @@ export default function AppointmentForm({ appointment, defaultDate, defaultStart
             </button>
           </div>
 
-          <form onSubmit={handleSubmit} className="p-6 space-y-5">
+          <form onSubmit={handleSubmit} className="p-4 sm:p-6 space-y-4 sm:space-y-5">
             {/* Patient Selection - Mode Toggle */}
             {!appointment && (
-              <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg border border-gray-200">
-                <div className="flex items-center gap-2 text-sm text-gray-600">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 p-2.5 sm:p-3 bg-gray-50 rounded-lg border border-gray-200">
+                <div className="flex items-center gap-2 text-xs sm:text-sm text-gray-600">
                   <Users className="w-4 h-4" />
                   <span className="font-medium">
                     {isNewPatientMode ? 'Créer un nouveau patient' : 'Rechercher un patient existant'}
@@ -207,17 +207,19 @@ export default function AppointmentForm({ appointment, defaultDate, defaultStart
                 <button
                   type="button"
                   onClick={handleToggleMode}
-                  className="flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                  className="flex items-center gap-1.5 sm:gap-2 px-2.5 py-1.5 sm:px-3 text-xs sm:text-sm font-medium text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
                 >
                   {isNewPatientMode ? (
                     <>
-                      <Search className="w-4 h-4" />
-                      Rechercher existant
+                      <Search className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                      <span className="hidden sm:inline">Rechercher existant</span>
+                      <span className="sm:hidden">Rechercher</span>
                     </>
                   ) : (
                     <>
-                      <UserPlus className="w-4 h-4" />
-                      Nouveau patient
+                      <UserPlus className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                      <span className="hidden sm:inline">Nouveau patient</span>
+                      <span className="sm:hidden">Nouveau</span>
                     </>
                   )}
                 </button>

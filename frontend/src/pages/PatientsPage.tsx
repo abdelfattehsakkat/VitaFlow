@@ -72,41 +72,41 @@ export default function PatientsPage() {
   }
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-4 sm:space-y-8">
       {/* Header - Enhanced Premium Style */}
-      <div className="flex flex-col gap-6">
+      <div className="flex flex-col gap-4 sm:gap-6">
         <div className="flex justify-between items-start">
-          <div className="flex items-start gap-6">
+          <div className="flex items-start gap-3 sm:gap-6">
             {/* Icon Badge */}
-            <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center shadow-lg shadow-blue-500/30">
-              <Users className="w-8 h-8 text-white" />
+            <div className="w-10 h-10 sm:w-16 sm:h-16 rounded-xl sm:rounded-2xl bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center shadow-lg shadow-blue-500/30">
+              <Users className="w-5 h-5 sm:w-8 sm:h-8 text-white" />
             </div>
             
             {/* Title & Description */}
-            <div className="space-y-2">
-              <div className="flex items-center gap-4">
-                <h1 className="text-4xl font-semibold tracking-tight text-gray-900">Patients</h1>
+            <div className="space-y-1 sm:space-y-2">
+              <div className="flex items-center gap-2 sm:gap-4">
+                <h1 className="text-2xl sm:text-4xl font-semibold tracking-tight text-gray-900">Patients</h1>
                 {data && (
-                  <span className="px-4 py-1.5 bg-gradient-to-br from-blue-50 to-blue-100 text-blue-700 text-sm font-semibold rounded-full border border-blue-200/60 shadow-sm">
-                    {data.pagination.total} {data.pagination.total > 1 ? 'patients' : 'patient'}
+                  <span className="px-2 py-1 sm:px-4 sm:py-1.5 bg-gradient-to-br from-blue-50 to-blue-100 text-blue-700 text-xs sm:text-sm font-semibold rounded-full border border-blue-200/60 shadow-sm">
+                    {data.pagination.total}
                   </span>
                 )}
               </div>
-              <p className="text-base text-gray-500 max-w-2xl">
+              <p className="text-sm sm:text-base text-gray-500 max-w-2xl">
                 Gérez les dossiers médicaux, consultations et historique de vos patients
               </p>
               
               {/* Quick Stats */}
               {data && data.patients.length > 0 && (
-                <div className="flex items-center gap-6 pt-2">
-                  <div className="flex items-center gap-2 text-sm text-gray-600">
+                <div className="flex items-center gap-3 sm:gap-6 pt-1 sm:pt-2">
+                  <div className="flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm text-gray-600">
                     <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
                     <span className="font-medium">{data.patients.length}</span>
                     <span className="text-gray-400">sur cette page</span>
                   </div>
-                  <div className="flex items-center gap-2 text-sm text-gray-600">
-                    <Calendar className="w-4 h-4 text-gray-400" />
-                    <span>Page {data.pagination.currentPage} / {data.pagination.totalPages}</span>
+                  <div className="flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm text-gray-600">
+                    <Calendar className="w-3 h-3 sm:w-4 sm:h-4 text-gray-400" />
+                    <span>Page {data.pagination.page} / {data.pagination.totalPages}</span>
                   </div>
                 </div>
               )}
@@ -115,25 +115,25 @@ export default function PatientsPage() {
           
           <button
             onClick={handleAdd}
-            className="group flex items-center gap-2 px-6 py-3 bg-gradient-to-b from-blue-500 to-blue-600 text-white rounded-xl hover:from-blue-600 hover:to-blue-700 shadow-lg shadow-blue-500/30 hover:shadow-xl hover:shadow-blue-500/40 transition-all duration-200 hover:-translate-y-0.5 font-medium"
+            className="group flex items-center gap-2 px-3 py-2.5 sm:px-6 sm:py-3 bg-gradient-to-b from-blue-500 to-blue-600 text-white rounded-lg sm:rounded-xl hover:from-blue-600 hover:to-blue-700 shadow-lg shadow-blue-500/30 hover:shadow-xl hover:shadow-blue-500/40 transition-all duration-200 hover:-translate-y-0.5 font-medium text-sm sm:text-base"
           >
             <Plus className="w-5 h-5 transition-transform group-hover:rotate-90 duration-200" />
-            Nouveau Patient
+            <span className="hidden sm:inline">Patient</span>
           </button>
         </div>
 
         {/* Search Bar - Integrated */}
         <div className="relative">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+          <Search className="absolute left-3 sm:left-4 top-1/2 -translate-y-1/2 w-4 h-4 sm:w-5 sm:h-5 text-gray-400" />
           <input
             type="text"
-            placeholder="Rechercher par nom, prénom, téléphone, numéro..."
+            placeholder="Rechercher..."
             value={searchTerm}
             onChange={(e) => {
               setSearchTerm(e.target.value)
               setCurrentPage(1)
             }}
-            className="w-full pl-12 pr-4 py-4 bg-gray-50/80 backdrop-blur-xl border border-gray-200/60 rounded-2xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500/60 focus:bg-white transition-all duration-200 text-base placeholder:text-gray-400"
+            className="w-full pl-10 sm:pl-12 pr-3 sm:pr-4 py-3 sm:py-4 bg-gray-50/80 backdrop-blur-xl border border-gray-200/60 rounded-xl sm:rounded-2xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500/60 focus:bg-white transition-all duration-200 text-sm sm:text-base placeholder:text-gray-400"
           />
         </div>
       </div>
@@ -152,25 +152,25 @@ export default function PatientsPage() {
               <table className="w-full">
                 <thead className="bg-gray-50/50 border-b border-gray-200/60">
                   <tr>
-                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                      N° Patient
+                    <th className="px-3 py-3 sm:px-6 sm:py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                      N°
                     </th>
-                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                    <th className="px-3 py-3 sm:px-6 sm:py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
                       Nom & Prénom
                     </th>
-                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                    <th className="hidden md:table-cell px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
                       Âge
                     </th>
-                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                    <th className="hidden sm:table-cell px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
                       Téléphone
                     </th>
-                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                    <th className="hidden lg:table-cell px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
                       Consultations
                     </th>
-                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                    <th className="hidden lg:table-cell px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
                       Total Reçu
                     </th>
-                    <th className="px-6 py-4 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                    <th className="px-3 py-3 sm:px-6 sm:py-4 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider">
                       Actions
                     </th>
                   </tr>
@@ -182,42 +182,42 @@ export default function PatientsPage() {
                       onClick={() => navigate(`/dashboard/patients/${patient._id}`)}
                       className="hover:bg-gray-50/50 transition-all duration-150 cursor-pointer group"
                     >
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <span className="text-sm font-medium text-gray-900">{patient.id}</span>
+                      <td className="px-3 py-3 sm:px-6 sm:py-4 whitespace-nowrap">
+                        <span className="text-xs sm:text-sm font-medium text-gray-900">{patient.id}</span>
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center">
-                            <User className="w-5 h-5 text-blue-600" />
+                      <td className="px-3 py-3 sm:px-6 sm:py-4 whitespace-nowrap">
+                        <div className="flex items-center gap-2 sm:gap-3">
+                          <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-blue-100 flex items-center justify-center">
+                            <User className="w-4 h-4 sm:w-5 sm:h-5 text-blue-600" />
                           </div>
                           <div>
-                            <div className="text-sm font-medium text-gray-900">
+                            <div className="text-xs sm:text-sm font-medium text-gray-900">
                               {patient.nom} {patient.prenom}
                             </div>
                             {patient.mutuelle && (
-                              <div className="text-xs text-gray-500">{patient.mutuelle}</div>
+                              <div className="text-xs text-gray-500 hidden sm:block">{patient.mutuelle}</div>
                             )}
                           </div>
                         </div>
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
+                      <td className="hidden md:table-cell px-6 py-4 whitespace-nowrap">
                         <span className="text-sm text-gray-900">
                           {patient.dateNaissance ? `${calculateAge(patient.dateNaissance)} ans` : 'N/A'}
                         </span>
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
+                      <td className="hidden sm:table-cell px-6 py-4 whitespace-nowrap">
                         <span className="text-sm text-gray-900">{patient.telephone}</span>
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
+                      <td className="hidden lg:table-cell px-6 py-4 whitespace-nowrap">
                         <span className="text-sm text-gray-900">{patient.soins.length}</span>
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
+                      <td className="hidden lg:table-cell px-6 py-4 whitespace-nowrap">
                         <span className="text-sm font-medium text-green-600">
                           {patient.totalRecu?.toFixed(2)} TND
                         </span>
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                        <div className="flex justify-end gap-1.5">
+                      <td className="px-3 py-3 sm:px-6 sm:py-4 whitespace-nowrap text-right text-sm font-medium">
+                        <div className="flex justify-end gap-1 sm:gap-1.5">
                           <button
                             onClick={(e) => {
                               e.stopPropagation()
@@ -258,22 +258,22 @@ export default function PatientsPage() {
 
             {/* Pagination */}
             {data.pagination.totalPages > 1 && (
-              <div className="px-6 py-4 border-t border-gray-200/60 bg-gray-50/30 flex items-center justify-between">
-                <div className="text-sm text-gray-600 font-medium">
-                  Page {data.pagination.page} sur {data.pagination.totalPages} · {data.pagination.total} patients
+              <div className="px-3 py-3 sm:px-6 sm:py-4 border-t border-gray-200/60 bg-gray-50/30 flex flex-col sm:flex-row items-center justify-between gap-2 sm:gap-0">
+                <div className="text-xs sm:text-sm text-gray-600 font-medium">
+                  Page {data.pagination.page}/{data.pagination.totalPages} · {data.pagination.total}
                 </div>
                 <div className="flex gap-2">
                   <button
                     onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
                     disabled={data.pagination.page === 1}
-                    className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-200/60 rounded-lg hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition-all duration-150 hover:shadow-sm"
+                    className="px-3 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm font-medium text-gray-700 bg-white border border-gray-200/60 rounded-lg hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition-all duration-150 hover:shadow-sm"
                   >
                     Précédent
                   </button>
                   <button
                     onClick={() => setCurrentPage((p) => Math.min(data.pagination.totalPages, p + 1))}
                     disabled={data.pagination.page === data.pagination.totalPages}
-                    className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-200/60 rounded-lg hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition-all duration-150 hover:shadow-sm"
+                    className="px-3 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm font-medium text-gray-700 bg-white border border-gray-200/60 rounded-lg hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition-all duration-150 hover:shadow-sm"
                   >
                     Suivant
                   </button>
@@ -326,10 +326,10 @@ function PatientForm({ patient, onClose }: { patient: Patient | null; onClose: (
   }
 
   return (
-    <div className="max-w-3xl">
+    <div className="max-w-3xl px-2 sm:px-0">
       <div className="bg-white rounded-lg shadow-sm">
-        <div className="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
-          <h2 className="text-xl font-semibold text-gray-900">
+        <div className="px-4 py-3 sm:px-6 sm:py-4 border-b border-gray-200 flex justify-between items-center">
+          <h2 className="text-lg sm:text-xl font-semibold text-gray-900">
             {patient ? 'Modifier Patient' : 'Nouveau Patient'}
           </h2>
           <button
@@ -341,10 +341,10 @@ function PatientForm({ patient, onClose }: { patient: Patient | null; onClose: (
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="p-6 space-y-6">
+        <form onSubmit={handleSubmit} className="p-4 sm:p-6 space-y-4 sm:space-y-6">
           {/* Identification */}
           <div>
-            <h3 className="text-lg font-medium text-gray-900 mb-4">Informations Personnelles</h3>
+            <h3 className="text-base sm:text-lg font-medium text-gray-900 mb-3 sm:mb-4">Informations Personnelles</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Nom *</label>
@@ -415,7 +415,7 @@ function PatientForm({ patient, onClose }: { patient: Patient | null; onClose: (
 
           {/* Mutuelle */}
           <div>
-            <h3 className="text-lg font-medium text-gray-900 mb-4">Mutuelle</h3>
+            <h3 className="text-base sm:text-lg font-medium text-gray-900 mb-3 sm:mb-4">Mutuelle</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Nom Mutuelle</label>
@@ -442,7 +442,7 @@ function PatientForm({ patient, onClose }: { patient: Patient | null; onClose: (
 
           {/* Antecedents */}
           <div>
-            <h3 className="text-lg font-medium text-gray-900 mb-4">Antécédents Médicaux</h3>
+            <h3 className="text-base sm:text-lg font-medium text-gray-900 mb-3 sm:mb-4">Antécédents Médicaux</h3>
             <textarea
               name="antecedents"
               value={formData.antecedents}
@@ -460,19 +460,19 @@ function PatientForm({ patient, onClose }: { patient: Patient | null; onClose: (
           )}
 
           {/* Actions */}
-          <div className="flex justify-end gap-3 pt-4 border-t">
+          <div className="flex flex-col sm:flex-row justify-end gap-2 sm:gap-3 pt-3 sm:pt-4 border-t">
             <button
               type="button"
               onClick={onClose}
               disabled={mutation.isPending}
-              className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-50"
+              className="w-full sm:w-auto px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-50 text-sm sm:text-base"
             >
               Annuler
             </button>
             <button
               type="submit"
               disabled={mutation.isPending}
-              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50"
+              className="w-full sm:w-auto px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 text-sm sm:text-base"
             >
               {mutation.isPending ? 'Enregistrement...' : patient ? 'Mettre à jour' : 'Créer'}
             </button>
