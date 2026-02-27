@@ -97,9 +97,11 @@ jobs:
           images: ${{ env.REGISTRY }}/${{ env.BACKEND_IMAGE_NAME }}
           tags: |
             type=ref,event=branch
+            type=sha,prefix={{branch}}-
             type=semver,pattern={{version}}
             type=semver,pattern={{major}}.{{minor}}
-            type=sha,prefix={{branch}}-
+          flavor: |
+            latest=false
 
       - name: Build and push Backend image
         uses: docker/build-push-action@v5
@@ -142,9 +144,11 @@ jobs:
           images: ${{ env.REGISTRY }}/${{ env.FRONTEND_IMAGE_NAME }}
           tags: |
             type=ref,event=branch
+            type=sha,prefix={{branch}}-
             type=semver,pattern={{version}}
             type=semver,pattern={{major}}.{{minor}}
-            type=sha,prefix={{branch}}-
+          flavor: |
+            latest=false
 
       - name: Build and push Frontend image
         uses: docker/build-push-action@v5
