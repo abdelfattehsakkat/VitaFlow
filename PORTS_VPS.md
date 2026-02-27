@@ -35,7 +35,7 @@ Créez le fichier `.env` avec ces ports :
 
 ```bash
 # VitaFlow - Configuration VPS
-GITHUB_REPOSITORY=abdelfattehsakkat/VitaFlow
+GITHUB_REPOSITORY=abdelfattehsakkat/vitaflow
 VERSION=latest
 
 # MongoDB - Port 27018 (27017 utilisé par cabinet-mongodb)

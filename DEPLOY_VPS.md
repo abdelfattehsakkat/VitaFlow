@@ -53,7 +53,7 @@ nano .env
 
 ```bash
 # Remplacez par votre username GitHub
-GITHUB_REPOSITORY=VOTRE-USERNAME/VitaFlow
+GITHUB_REPOSITORY=VOTRE-USERNAME/vitaflow
 VERSION=latest
 
 # MongoDB - Changez le mot de passe !

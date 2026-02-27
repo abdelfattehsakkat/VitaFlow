@@ -145,7 +145,7 @@ nano .env  # Éditer les secrets !
 ### Variables d'environnement (.env)
 ```bash
 # À modifier OBLIGATOIREMENT :
-GITHUB_REPOSITORY=votre-username/VitaFlow
+GITHUB_REPOSITORY=votre-username/vitaflow
 MONGO_ROOT_PASSWORD=VotreMotDePasseSecurise123!
 MONGO_PORT=27018  # 27017 si pas d'autre MongoDB, 27018 si conflit
 JWT_SECRET=$(openssl rand -base64 48)
