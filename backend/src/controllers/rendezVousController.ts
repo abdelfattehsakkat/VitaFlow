@@ -1,4 +1,5 @@
 import { Response } from 'express';
+import mongoose from 'mongoose';
 import RendezVous from '../models/RendezVous';
 import { AuthRequest } from '../middleware/auth';
 
@@ -182,7 +183,7 @@ export const updateRendezVous = async (req: AuthRequest, res: Response) => {
       const newHeureFin = heureFin || rdv.heureFin;
       
       const overlapping = await RendezVous.findOne({
-        _id: { $ne: id },
+        _id: { $ne: new mongoose.Types.ObjectId(String(id)) },
         patientId: rdv.patientId,
         date: newDate,
         statut: { $ne: 'annule' },

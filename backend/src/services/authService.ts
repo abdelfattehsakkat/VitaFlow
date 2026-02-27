@@ -1,4 +1,4 @@
-import jwt from 'jsonwebtoken';
+import jwt, { SignOptions } from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
 
 export interface JWTPayload {
@@ -10,10 +10,12 @@ export interface JWTPayload {
  * Génère un access token JWT
  */
 export const generateAccessToken = (userId: string, role: string): string => {
+  // @ts-ignore - expiresIn accepts string despite strict type checking
+  const options: SignOptions = { expiresIn: process.env.JWT_EXPIRES_IN || '7d' };
   return jwt.sign(
     { userId, role },
     process.env.JWT_SECRET!,
-    { expiresIn: process.env.JWT_EXPIRES_IN || '7d' }
+    options
   );
 };
 
@@ -21,10 +23,12 @@ export const generateAccessToken = (userId: string, role: string): string => {
  * Génère un refresh token JWT
  */
 export const generateRefreshToken = (userId: string): string => {
+  // @ts-ignore - expiresIn accepts string despite strict type checking
+  const options: SignOptions = { expiresIn: process.env.JWT_REFRESH_EXPIRES_IN || '30d' };
   return jwt.sign(
     { userId },
     process.env.JWT_REFRESH_SECRET!,
-    { expiresIn: process.env.JWT_REFRESH_EXPIRES_IN || '30d' }
+    options
   );
 };
 

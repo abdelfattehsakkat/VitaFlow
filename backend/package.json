@@ -8,6 +8,7 @@
     "build": "tsc",
     "start": "node dist/server.js",
     "seed": "ts-node src/scripts/seed.ts",
+    "seed:docker": "node src/scripts/seed.js",
     "seed:patients": "ts-node src/scripts/seed-patients.ts",
     "test": "echo \"Error: no test specified\" && exit 1"
   },

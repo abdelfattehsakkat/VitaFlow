@@ -26,13 +26,13 @@ const seedData = async () => {
     if (!adminExists) {
       await User.create({
         email: 'admin@vitaflow.com',
-        password: 'Admin123!',
+        password: 'adminadmin',
         nom: 'Admin',
         prenom: 'VitaFlow',
         role: 'admin',
         isActive: true
       });
-      console.log('✅ Admin créé: admin@vitaflow.com / Admin123!');
+      console.log('✅ Admin créé: admin@vitaflow.com / adminadmin');
     } else {
       console.log('ℹ️  Admin existe déjà');
     }

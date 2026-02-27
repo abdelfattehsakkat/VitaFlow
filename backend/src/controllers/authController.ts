@@ -53,8 +53,23 @@ export const login = async (req: AuthRequest, res: Response) => {
   try {
     const { email, password } = req.body;
     
+    console.log('🔍 Login attempt for:', email);
     const user = await User.findOne({ email, isActive: true }).select('+password');
-    if (!user || !(await user.comparePassword(password))) {
+    console.log('👤 User found:', !!user);
+    
+    if (!user) {
+      console.log('❌ User not found or not active');
+      return res.status(401).json({
+        success: false,
+        message: 'Email ou mot de passe incorrect'
+      });
+    }
+    
+    const passwordMatch = await user.comparePassword(password);
+    console.log('🔐 Password match:', passwordMatch);
+    
+    if (!passwordMatch) {
+      console.log('❌ Password does not match');
       return res.status(401).json({
         success: false,
         message: 'Email ou mot de passe incorrect'
@@ -67,6 +82,7 @@ export const login = async (req: AuthRequest, res: Response) => {
     user.refreshTokens.push(refreshToken);
     await user.save();
     
+    console.log('✅ Login successful for:', email);
     res.json({
       success: true,
       data: {

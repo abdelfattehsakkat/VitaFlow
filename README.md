@@ -380,16 +380,111 @@ Frontend disponible sur **http://localhost:5173**
    - ⏳ Permissions (caméra, notifications)
 
 5. **Déploiement**
-   - ⏳ Docker Compose (backend + frontend + MongoDB)
-   - ⏳ Variables d'environnement production
-   - ⏳ CI/CD GitHub Actions
+   - ✅ Dockerfiles (backend + frontend)
+   - ✅ Docker Compose (dev + production)
+   - ✅ Persistance des données MongoDB
+   - ✅ CI/CD GitHub Actions
+   - ✅ Scripts de déploiement automatisés
    - ⏳ Hébergement (VPS, cloud)
+
+## 🚀 Déploiement Docker
+
+### Développement Local (avec Docker)
+
+```bash
+# Quick start avec Make
+make start
+
+# Créer le compte admin par défaut (première utilisation)
+make seed
+
+# Ou avec Docker Compose directement
+docker-compose up -d
+
+# Voir les logs
+make logs
+
+# Arrêter
+make stop
+```
+
+### 🔑 Connexion Initiale
+
+Après le démarrage, créez le compte administrateur :
+
+```bash
+make seed
+```
+
+Puis connectez-vous avec :
+- **Email** : admin@vitaflow.com
+- **Mot de passe** : adminadmin
+
+⚠️ **Important** : Changez ces identifiants après la première connexion !
+
+### Production
+
+```bash
+# 1. Configurer les variables d'environnement
+cp .env.prod.example .env
+nano .env  # Éditer avec vos valeurs de production
+
+# 2. Déployer avec Make
+make deploy
+
+# Ou avec Docker Compose
+docker-compose -f docker-compose.prod.yml up -d
+
+# 3. Vérifier l'état
+make deploy-status
+```
+
+### Commandes Utiles
+
+```bash
+# Voir toutes les commandes disponibles
+make help
+
+# Sauvegarder la base de données
+make backup
+
+# Voir les logs d'un service
+make logs-backend
+make logs-frontend
+make logs-mongodb
+
+# Vérifier la santé de l'application
+make health
+```
+
+### GitHub Actions CI/CD
+
+Le pipeline CI/CD s'exécute automatiquement sur GitHub :
+
+1. **Tests** : Lance les tests backend et frontend
+2. **Build** : Construit les images Docker
+3. **Push** : Publie sur GitHub Container Registry (ghcr.io)
+
+Les images sont disponibles à :
+- `ghcr.io/VOTRE-USERNAME/vitaflow/backend:latest`
+- `ghcr.io/VOTRE-USERNAME/vitaflow/frontend:latest`
+
+### 📚 Documentation de Déploiement
+
+Pour plus de détails sur le déploiement, consultez :
+
+- **[🚀 Guide Rapide VPS](./DEPLOY_VPS.md)** - Déploiement en 5 étapes sur votre VPS
+- **[🔄 Guide CI/CD](./CI_CD.md)** - Pipeline GitHub Actions et workflow complet
+- **[📖 Guide Complet](./DEPLOYMENT.md)** - Documentation exhaustive (HTTPS, sauvegardes, monitoring)
+
+Pour plus de détails, consultez **[DEPLOYMENT.md](DEPLOYMENT.md)** - Guide complet de déploiement.
 
 ## 📖 Documentation
 
 ### Général
 - [PROJECT_PLAN.md](PROJECT_PLAN.md) - Plan détaillé 82 étapes
 - [PROGRESS.md](PROGRESS.md) - Suivi du développement
+- **[DEPLOYMENT.md](DEPLOYMENT.md)** - 🚀 **Guide de déploiement complet**
 
 ### Backend
 - [backend/README.md](backend/README.md) - Documentation backend
