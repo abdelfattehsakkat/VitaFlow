@@ -72,26 +72,26 @@ export default function PatientsPage() {
   }
 
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div className="flex justify-between items-center">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900">Patients</h1>
-          <p className="text-gray-600 mt-1">Gérer les dossiers patients</p>
+    <div className="space-y-8">
+      {/* Header - Apple Style */}
+      <div className="flex flex-col gap-6">
+        <div className="flex justify-between items-start">
+          <div className="space-y-1">
+            <h1 className="text-4xl font-semibold tracking-tight text-gray-900">Patients</h1>
+            <p className="text-base text-gray-500">Gérer les dossiers patients</p>
+          </div>
+          <button
+            onClick={handleAdd}
+            className="group flex items-center gap-2 px-6 py-3 bg-gradient-to-b from-blue-500 to-blue-600 text-white rounded-xl hover:from-blue-600 hover:to-blue-700 shadow-lg shadow-blue-500/30 hover:shadow-xl hover:shadow-blue-500/40 transition-all duration-200 hover:-translate-y-0.5 font-medium"
+          >
+            <Plus className="w-5 h-5 transition-transform group-hover:rotate-90 duration-200" />
+            Nouveau Patient
+          </button>
         </div>
-        <button
-          onClick={handleAdd}
-          className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-        >
-          <Plus className="w-5 h-5" />
-          Nouveau Patient
-        </button>
-      </div>
 
-      {/* Search Bar */}
-      <div className="bg-white rounded-lg shadow-sm p-4">
+        {/* Search Bar - Integrated */}
         <div className="relative">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
           <input
             type="text"
             placeholder="Rechercher par nom, prénom, téléphone, numéro..."
@@ -100,54 +100,54 @@ export default function PatientsPage() {
               setSearchTerm(e.target.value)
               setCurrentPage(1)
             }}
-            className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="w-full pl-12 pr-4 py-4 bg-gray-50/80 backdrop-blur-xl border border-gray-200/60 rounded-2xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500/60 focus:bg-white transition-all duration-200 text-base placeholder:text-gray-400"
           />
         </div>
       </div>
 
       {/* Patients Table */}
-      <div className="bg-white rounded-lg shadow-sm overflow-hidden">
+      <div className="bg-white/80 backdrop-blur-xl rounded-2xl shadow-sm border border-gray-200/60 overflow-hidden">
         {isLoading ? (
-          <div className="p-8 text-center text-gray-500">Chargement...</div>
+          <div className="p-12 text-center text-gray-500">Chargement...</div>
         ) : !data?.patients.length ? (
-          <div className="p-8 text-center text-gray-500">
+          <div className="p-12 text-center text-gray-500">
             {searchTerm ? 'Aucun patient trouvé pour cette recherche' : 'Aucun patient enregistré'}
           </div>
         ) : (
           <>
             <div className="overflow-x-auto">
               <table className="w-full">
-                <thead className="bg-gray-50 border-b border-gray-200">
+                <thead className="bg-gray-50/50 border-b border-gray-200/60">
                   <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
                       N° Patient
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
                       Nom & Prénom
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
                       Âge
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
                       Téléphone
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
                       Consultations
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
                       Total Reçu
                     </th>
-                    <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-4 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider">
                       Actions
                     </th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-gray-200">
+                <tbody className="divide-y divide-gray-200/60">
                   {data.patients.map((patient) => (
                     <tr 
                       key={patient._id} 
                       onClick={() => navigate(`/dashboard/patients/${patient._id}`)}
-                      className="hover:bg-gray-50 transition-colors cursor-pointer"
+                      className="hover:bg-gray-50/50 transition-all duration-150 cursor-pointer group"
                     >
                       <td className="px-6 py-4 whitespace-nowrap">
                         <span className="text-sm font-medium text-gray-900">{patient.id}</span>
@@ -184,13 +184,13 @@ export default function PatientsPage() {
                         </span>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                        <div className="flex justify-end gap-2">
+                        <div className="flex justify-end gap-1.5">
                           <button
                             onClick={(e) => {
                               e.stopPropagation()
                               navigate(`/dashboard/patients/${patient._id}`)
                             }}
-                            className="p-1.5 text-gray-600 hover:bg-gray-50 rounded transition-colors"
+                            className="p-2 text-gray-600 hover:bg-gray-100/80 rounded-lg transition-all duration-150 hover:scale-105"
                             title="Voir Détails"
                           >
                             <Eye className="w-4 h-4" />
@@ -200,7 +200,7 @@ export default function PatientsPage() {
                               e.stopPropagation()
                               handleEdit(patient)
                             }}
-                            className="p-1.5 text-blue-600 hover:bg-blue-50 rounded transition-colors"
+                            className="p-2 text-blue-600 hover:bg-blue-50/80 rounded-lg transition-all duration-150 hover:scale-105"
                             title="Modifier"
                           >
                             <Edit2 className="w-4 h-4" />
@@ -210,7 +210,7 @@ export default function PatientsPage() {
                               e.stopPropagation()
                               handleDelete(patient)
                             }}
-                            className="p-1.5 text-red-600 hover:bg-red-50 rounded transition-colors"
+                            className="p-2 text-red-600 hover:bg-red-50/80 rounded-lg transition-all duration-150 hover:scale-105"
                             title="Supprimer"
                           >
                             <Trash2 className="w-4 h-4" />
@@ -225,22 +225,22 @@ export default function PatientsPage() {
 
             {/* Pagination */}
             {data.pagination.totalPages > 1 && (
-              <div className="px-6 py-4 border-t border-gray-200 flex items-center justify-between">
-                <div className="text-sm text-gray-700">
-                  Page {data.pagination.page} sur {data.pagination.totalPages} ({data.pagination.total} patients)
+              <div className="px-6 py-4 border-t border-gray-200/60 bg-gray-50/30 flex items-center justify-between">
+                <div className="text-sm text-gray-600 font-medium">
+                  Page {data.pagination.page} sur {data.pagination.totalPages} · {data.pagination.total} patients
                 </div>
                 <div className="flex gap-2">
                   <button
                     onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
                     disabled={data.pagination.page === 1}
-                    className="px-3 py-1 border border-gray-300 rounded hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-200/60 rounded-lg hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition-all duration-150 hover:shadow-sm"
                   >
                     Précédent
                   </button>
                   <button
                     onClick={() => setCurrentPage((p) => Math.min(data.pagination.totalPages, p + 1))}
                     disabled={data.pagination.page === data.pagination.totalPages}
-                    className="px-3 py-1 border border-gray-300 rounded hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-200/60 rounded-lg hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition-all duration-150 hover:shadow-sm"
                   >
                     Suivant
                   </button>
