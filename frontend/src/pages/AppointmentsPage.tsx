@@ -5,6 +5,7 @@ import api from '../lib/api'
 import type { RendezVous, ApiResponse, PaginationMeta } from '../types'
 import AppointmentCalendar from '../components/AppointmentCalendar'
 import AppointmentForm from '../components/AppointmentForm'
+import ConfirmDialog from '../components/ConfirmDialog'
 
 export default function AppointmentsPage() {
   const queryClient = useQueryClient()
@@ -13,6 +14,7 @@ export default function AppointmentsPage() {
   const [showForm, setShowForm] = useState(false)
   const [selectedAppointment, setSelectedAppointment] = useState<RendezVous | null>(null)
   const [slotInfo, setSlotInfo] = useState<{ start: Date; end: Date } | null>(null)
+  const [appointmentToDelete, setAppointmentToDelete] = useState<RendezVous | null>(null)
 
   // Fetch appointments
   const { data, isLoading } = useQuery({
@@ -34,8 +36,13 @@ export default function AppointmentsPage() {
   })
 
   const handleDelete = (appointment: RendezVous) => {
-    if (confirm(`Êtes-vous sûr de vouloir supprimer le rendez-vous de ${appointment.patientNom} ?`)) {
-      deleteMutation.mutate(appointment._id)
+    setAppointmentToDelete(appointment)
+  }
+
+  const confirmDelete = () => {
+    if (appointmentToDelete) {
+      deleteMutation.mutate(appointmentToDelete._id)
+      setAppointmentToDelete(null)
     }
   }
 
@@ -202,49 +209,6 @@ export default function AppointmentsPage() {
         </div>
       </div>
 
-      {/* Content Area - Placeholder */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Status Cards */}
-        <div className="bg-white/80 backdrop-blur-xl rounded-2xl shadow-sm border border-gray-200/60 p-6 hover:shadow-lg transition-all duration-200 hover:scale-105">
-          <div className="flex items-center gap-4 mb-4">
-            <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-50 to-blue-100 flex items-center justify-center">
-              <Clock className="w-6 h-6 text-blue-600" />
-            </div>
-            <div>
-              <p className="text-sm font-medium text-gray-500">En attente</p>
-              <p className="text-2xl font-bold text-gray-900">{stats.pending}</p>
-            </div>
-          </div>
-          <p className="text-xs text-gray-400">Rendez-vous à confirmer</p>
-        </div>
-
-        <div className="bg-white/80 backdrop-blur-xl rounded-2xl shadow-sm border border-gray-200/60 p-6 hover:shadow-lg transition-all duration-200 hover:scale-105">
-          <div className="flex items-center gap-4 mb-4">
-            <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-green-50 to-green-100 flex items-center justify-center">
-              <CheckCircle2 className="w-6 h-6 text-green-600" />
-            </div>
-            <div>
-              <p className="text-sm font-medium text-gray-500">Confirmés</p>
-              <p className="text-2xl font-bold text-gray-900">{stats.confirmed}</p>
-            </div>
-          </div>
-          <p className="text-xs text-gray-400">Patients confirmés</p>
-        </div>
-
-        <div className="bg-white/80 backdrop-blur-xl rounded-2xl shadow-sm border border-gray-200/60 p-6 hover:shadow-lg transition-all duration-200 hover:scale-105">
-          <div className="flex items-center gap-4 mb-4">
-            <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-amber-50 to-amber-100 flex items-center justify-center">
-              <AlertCircle className="w-6 h-6 text-amber-600" />
-            </div>
-            <div>
-              <p className="text-sm font-medium text-gray-500">Aujourd'hui</p>
-              <p className="text-2xl font-bold text-gray-900">{stats.today}</p>
-            </div>
-          </div>
-          <p className="text-xs text-gray-400">Consultations du jour</p>
-        </div>
-      </div>
-
       {/* Main Content */}
       <div className="bg-white/80 backdrop-blur-xl rounded-2xl shadow-sm border border-gray-200/60 overflow-hidden">
         {selectedView === 'calendar' ? (
@@ -340,9 +304,21 @@ export default function AppointmentsPage() {
             setSelectedAppointment(null)
             setSlotInfo(null)
           }}
+          onDelete={handleDelete}
         />
       )}
+
+      {/* Delete Confirmation Dialog */}
+      <ConfirmDialog
+        isOpen={appointmentToDelete !== null}
+        title="Supprimer le rendez-vous"
+        message={appointmentToDelete ? `Êtes-vous sûr de vouloir supprimer définitivement le rendez-vous de ${appointmentToDelete.patientNom} ? Cette action est irréversible.` : ''}
+        confirmLabel="Supprimer"
+        cancelLabel="Annuler"
+        variant="danger"
+        onConfirm={confirmDelete}
+        onCancel={() => setAppointmentToDelete(null)}
+      />
     </div>
   )
 }
-

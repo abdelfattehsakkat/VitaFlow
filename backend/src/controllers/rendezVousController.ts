@@ -13,11 +13,17 @@ export const getRendezVous = async (req: AuthRequest, res: Response) => {
       statut,
       startDate,
       endDate,
+      includeAnnule,
       page = 1,
       limit = 50
     } = req.query;
     
     const query: any = {};
+    
+    // Par défaut, exclure les rendez-vous annulés
+    if (includeAnnule !== 'true') {
+      query.statut = { $ne: 'annule' };
+    }
     
     // Filtres
     if (date) {
@@ -36,7 +42,10 @@ export const getRendezVous = async (req: AuthRequest, res: Response) => {
     }
     
     if (patientId) query.patientId = patientId;
-    if (statut) query.statut = statut;
+    if (statut) {
+      // Si un statut spécifique est demandé, l'utiliser
+      query.statut = statut;
+    }
     
     const skip = (Number(page) - 1) * Number(limit);
     
@@ -214,28 +223,13 @@ export const updateRendezVous = async (req: AuthRequest, res: Response) => {
 };
 
 /**
- * Delete rendez-vous (soft delete avec statut annulé)
+ * Delete rendez-vous (suppression définitive)
  */
 export const deleteRendezVous = async (req: AuthRequest, res: Response) => {
   try {
     const { id } = req.params;
-    const { hard } = req.query;
     
-    if (hard === 'true') {
-      // Hard delete
-      const rdv = await RendezVous.findByIdAndDelete(id);
-      if (!rdv) {
-        return res.status(404).json({ success: false, message: 'Rendez-vous non trouvé' });
-      }
-      return res.json({ success: true, message: 'Rendez-vous supprimé définitivement' });
-    }
-    
-    // Soft delete
-    const rdv = await RendezVous.findByIdAndUpdate(
-      id,
-      { statut: 'annule' },
-      { new: true }
-    );
+    const rdv = await RendezVous.findByIdAndDelete(id);
     
     if (!rdv) {
       return res.status(404).json({ success: false, message: 'Rendez-vous non trouvé' });
@@ -243,8 +237,7 @@ export const deleteRendezVous = async (req: AuthRequest, res: Response) => {
     
     res.json({
       success: true,
-      message: 'Rendez-vous annulé',
-      data: rdv
+      message: 'Rendez-vous supprimé'
     });
   } catch (error: any) {
     res.status(500).json({ success: false, message: error.message });
