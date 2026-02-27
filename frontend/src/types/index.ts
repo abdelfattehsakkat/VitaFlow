@@ -54,14 +54,16 @@ interface Patient {
 
 interface RendezVous {
   _id: string
-  patient: string | Patient
-  medecin: string | User
-  dateDebut: string
-  dateFin: string
-  titre: string
-  description?: string
+  patientId: string
+  patientNom: string
+  medecinId: string
+  medecinNom: string
+  date: string
+  heureDebut: string
+  heureFin: string
   statut: 'planifie' | 'confirme' | 'termine' | 'annule'
-  priorite?: 'basse' | 'normale' | 'haute' | 'urgente'
+  motif?: string
+  notes?: string
   createdAt: string
   updatedAt: string
 }

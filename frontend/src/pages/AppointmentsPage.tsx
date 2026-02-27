@@ -1,39 +1,109 @@
 import { useState } from 'react'
-import { useQuery } from '@tanstack/react-query'
-import { Calendar, Plus, Clock, Users, CheckCircle2, XCircle, AlertCircle, Filter } from 'lucide-react'
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import { Calendar, Plus, Clock, Users, CheckCircle2, XCircle, AlertCircle, Filter, Edit2, Trash2 } from 'lucide-react'
 import api from '../lib/api'
 import type { RendezVous, ApiResponse, PaginationMeta } from '../types'
+import AppointmentCalendar from '../components/AppointmentCalendar'
+import AppointmentForm from '../components/AppointmentForm'
 
 export default function AppointmentsPage() {
+  const queryClient = useQueryClient()
   const [selectedView, setSelectedView] = useState<'calendar' | 'list'>('calendar')
   const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0])
+  const [showForm, setShowForm] = useState(false)
+  const [selectedAppointment, setSelectedAppointment] = useState<RendezVous | null>(null)
+  const [slotInfo, setSlotInfo] = useState<{ start: Date; end: Date } | null>(null)
 
-  // Fetch appointments (à implémenter complètement plus tard)
+  // Fetch appointments
   const { data, isLoading } = useQuery({
     queryKey: ['rendez-vous', selectedDate],
     queryFn: async () => {
-      // Pour l'instant, retourne des données mockées
-      return {
-        appointments: [] as RendezVous[],
-        pagination: {
-          total: 0,
-          currentPage: 1,
-          totalPages: 1,
-          page: 1,
-          limit: 10
-        } as PaginationMeta,
-        stats: {
-          today: 0,
-          upcoming: 0,
-          confirmed: 0,
-          pending: 0
-        }
-      }
+      const response = await api.get<ApiResponse<RendezVous[]>>('/rendez-vous')
+      return response.data.data
     },
   })
 
-  const stats = data?.stats || { today: 0, upcoming: 0, confirmed: 0, pending: 0 }
-  const totalAppointments = data?.pagination.total || 0
+  // Delete appointment mutation
+  const deleteMutation = useMutation({
+    mutationFn: async (id: string) => {
+      await api.delete(`/rendez-vous/${id}`)
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['rendez-vous'] })
+    },
+  })
+
+  const handleDelete = (appointment: RendezVous) => {
+    if (confirm(`Êtes-vous sûr de vouloir supprimer le rendez-vous de ${appointment.patientNom} ?`)) {
+      deleteMutation.mutate(appointment._id)
+    }
+  }
+
+  const handleSelectEvent = (appointment: RendezVous) => {
+    setSelectedAppointment(appointment)
+    setSlotInfo(null)
+    setShowForm(true)
+  }
+
+  const handleSelectSlot = (info: { start: Date; end: Date }) => {
+    setSelectedAppointment(null)
+    setSlotInfo(info)
+    setShowForm(true)
+  }
+
+  const handleAddAppointment = () => {
+    setSelectedAppointment(null)
+    setSlotInfo(null)
+    setShowForm(true)
+  }
+
+  const appointments = Array.isArray(data) ? data : []
+  
+  // Calculate stats
+  const today = new Date().toISOString().split('T')[0]
+  const stats = {
+    today: appointments.filter(rdv => rdv.date.startsWith(today)).length,
+    upcoming: appointments.filter(rdv => new Date(rdv.date) > new Date()).length,
+    confirmed: appointments.filter(rdv => rdv.statut === 'confirme').length,
+    pending: appointments.filter(rdv => rdv.statut === 'planifie').length,
+  }
+  
+  const totalAppointments = appointments.length
+
+  const formatTime = (time: string) => time
+  
+  const formatDate = (date: string) => {
+    return new Date(date).toLocaleDateString('fr-FR', {
+      day: '2-digit',
+      month: 'long',
+      year: 'numeric'
+    })
+  }
+
+  const getStatutBadgeClass = (statut: string) => {
+    switch (statut) {
+      case 'planifie':
+        return 'bg-indigo-50 text-indigo-700 border-indigo-200/60'
+      case 'confirme':
+        return 'bg-green-50 text-green-700 border-green-200/60'
+      case 'termine':
+        return 'bg-gray-50 text-gray-700 border-gray-200/60'
+      case 'annule':
+        return 'bg-red-50 text-red-700 border-red-200/60'
+      default:
+        return 'bg-gray-50 text-gray-700 border-gray-200/60'
+    }
+  }
+
+  const getStatutLabel = (statut: string) => {
+    switch (statut) {
+      case 'planifie': return 'Planifié'
+      case 'confirme': return 'Confirmé'
+      case 'termine': return 'Terminé'
+      case 'annule': return 'Annulé'
+      default: return statut
+    }
+  }
 
   return (
     <div className="space-y-8">
@@ -79,7 +149,10 @@ export default function AppointmentsPage() {
             </div>
           </div>
           
-          <button className="group flex items-center gap-2 px-6 py-3 bg-gradient-to-b from-violet-500 to-violet-600 text-white rounded-xl hover:from-violet-600 hover:to-violet-700 shadow-lg shadow-violet-500/30 hover:shadow-xl hover:shadow-violet-500/40 transition-all duration-200 hover:-translate-y-0.5 font-medium">
+          <button 
+            onClick={handleAddAppointment}
+            className="group flex items-center gap-2 px-6 py-3 bg-gradient-to-b from-violet-500 to-violet-600 text-white rounded-xl hover:from-violet-600 hover:to-violet-700 shadow-lg shadow-violet-500/30 hover:shadow-xl hover:shadow-violet-500/40 transition-all duration-200 hover:-translate-y-0.5 font-medium"
+          >
             <Plus className="w-5 h-5 transition-transform group-hover:rotate-90 duration-200" />
             Nouveau Rendez-vous
           </button>
@@ -173,31 +246,109 @@ export default function AppointmentsPage() {
       </div>
 
       {/* Main Content */}
-      <div className="bg-white/80 backdrop-blur-xl rounded-2xl shadow-sm border border-gray-200/60 overflow-hidden min-h-[500px]">
-        {isLoading ? (
-          <div className="p-12 text-center text-gray-500">Chargement...</div>
-        ) : selectedView === 'calendar' ? (
-          <div className="p-12 text-center">
-            <Calendar className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">Vue Calendrier</h3>
-            <p className="text-gray-500 mb-6">Le calendrier interactif sera implémenté ici</p>
-            <div className="inline-flex items-center gap-2 px-4 py-2 bg-violet-50 text-violet-700 rounded-lg text-sm font-medium">
-              <AlertCircle className="w-4 h-4" />
-              Intégration FullCalendar prévue
-            </div>
+      <div className="bg-white/80 backdrop-blur-xl rounded-2xl shadow-sm border border-gray-200/60 overflow-hidden">
+        {selectedView === 'calendar' ? (
+          <div className="p-6">
+            {isLoading ? (
+              <div className="text-center py-16">
+                <div className="animate-spin w-8 h-8 border-4 border-violet-500 border-t-transparent rounded-full mx-auto mb-4"></div>
+                <p className="text-gray-500">Chargement du calendrier...</p>
+              </div>
+            ) : (
+              <AppointmentCalendar
+                appointments={appointments}
+                onSelectEvent={handleSelectEvent}
+                onSelectSlot={handleSelectSlot}
+              />
+            )}
           </div>
         ) : (
-          <div className="p-12 text-center">
-            <Users className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">Vue Liste</h3>
-            <p className="text-gray-500 mb-6">La liste détaillée des rendez-vous sera affichée ici</p>
-            <div className="inline-flex items-center gap-2 px-4 py-2 bg-violet-50 text-violet-700 rounded-lg text-sm font-medium">
-              <AlertCircle className="w-4 h-4" />
-              Table interactive avec filtres prévue
-            </div>
+          <div className="overflow-x-auto">
+            {isLoading ? (
+              <div className="text-center py-16">
+                <div className="animate-spin w-8 h-8 border-4 border-violet-500 border-t-transparent rounded-full mx-auto mb-4"></div>
+                <p className="text-gray-500">Chargement des rendez-vous...</p>
+              </div>
+            ) : appointments.length === 0 ? (
+              <div className="text-center py-16">
+                <Calendar className="w-16 h-16 mx-auto text-gray-300 mb-4" />
+                <p className="text-gray-500 text-lg">Aucun rendez-vous trouvé</p>
+                <p className="text-gray-400 text-sm mt-2">Cliquez sur "Nouveau rendez-vous" pour en créer un</p>
+              </div>
+            ) : (
+              <table className="w-full">
+                <thead className="bg-gray-50/50 border-b border-gray-200/60">
+                  <tr>
+                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Patient</th>
+                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Date</th>
+                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Heure</th>
+                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Motif</th>
+                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Statut</th>
+                    <th className="px-6 py-4 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider">Actions</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-200/60">
+                  {appointments.map((rdv) => (
+                    <tr key={rdv._id} className="hover:bg-gray-50/50 transition-colors group">
+                      <td className="px-6 py-4">
+                        <div className="font-medium text-gray-900">{rdv.patientNom}</div>
+                        <div className="text-sm text-gray-500">{rdv.medecinNom}</div>
+                      </td>
+                      <td className="px-6 py-4 text-sm text-gray-900">
+                        {formatDate(rdv.date)}
+                      </td>
+                      <td className="px-6 py-4 text-sm text-gray-900">
+                        {formatTime(rdv.heureDebut)} - {formatTime(rdv.heureFin)}
+                      </td>
+                      <td className="px-6 py-4 text-sm text-gray-900">
+                        {rdv.motif || 'Consultation'}
+                      </td>
+                      <td className="px-6 py-4">
+                        <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium border ${getStatutBadgeClass(rdv.statut)}`}>
+                          {getStatutLabel(rdv.statut)}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4 text-right">
+                        <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                          <button
+                            onClick={() => handleSelectEvent(rdv)}
+                            className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                            title="Modifier"
+                          >
+                            <Edit2 className="w-4 h-4" />
+                          </button>
+                          <button
+                            onClick={() => handleDelete(rdv)}
+                            className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                            title="Supprimer"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            )}
           </div>
         )}
       </div>
+
+      {/* Appointment Form Modal */}
+      {showForm && (
+        <AppointmentForm
+          appointment={selectedAppointment}
+          defaultDate={slotInfo?.start}
+          defaultStart={slotInfo?.start}
+          defaultEnd={slotInfo?.end}
+          onClose={() => {
+            setShowForm(false)
+            setSelectedAppointment(null)
+            setSlotInfo(null)
+          }}
+        />
+      )}
     </div>
   )
 }
