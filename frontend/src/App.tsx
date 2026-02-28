@@ -10,6 +10,7 @@ import AppointmentsPage from './pages/AppointmentsPage'
 import UsersPage from './pages/UsersPage'
 import BilanPage from './pages/BilanPage'
 import ChargesPage from './pages/ChargesPage'
+import BilanFinalPage from './pages/BilanFinalPage'
 
 function App() {
   const { isAuthenticated, checkAuth } = useAuthStore()
@@ -33,6 +34,7 @@ function App() {
         <Route path="appointments" element={<AppointmentsPage />} />
         <Route path="bilan" element={<BilanPage />} />
         <Route path="charges" element={<ChargesPage />} />
+        <Route path="bilan-final" element={<BilanFinalPage />} />
         <Route path="users" element={<UsersPage />} />
       </Route>
 

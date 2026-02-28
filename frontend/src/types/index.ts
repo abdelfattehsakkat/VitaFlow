@@ -5,6 +5,8 @@ interface User {
   prenom: string
   role: 'admin' | 'medecin' | 'assistant'
   isActive: boolean
+  telephone?: string
+  createdAt?: string
 }
 
 interface AuthResponse {

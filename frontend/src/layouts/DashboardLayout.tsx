@@ -13,13 +13,14 @@ export default function DashboardLayout() {
   const menuItems = useMemo(() => {
     if (!user?.role) return []
     return getMenuItemsByRole(user.role)
-  }, [user?.role])
+  }, [user])
 
   const isActive = (path: string) => {
     if (path === '/dashboard') {
       return location.pathname === path
     }
-    return location.pathname.startsWith(path)
+    // Exact match or path with trailing slash/segment
+    return location.pathname === path || location.pathname.startsWith(path + '/')
   }
 
   const closeMobileMenu = () => setMobileMenuOpen(false)

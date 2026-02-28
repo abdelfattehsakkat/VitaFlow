@@ -233,7 +233,7 @@ export default function UsersPage() {
                         {getRoleBadge(user.role)}
                       </td>
                       <td className="hidden lg:table-cell px-6 py-4 whitespace-nowrap">
-                        <span className="text-sm text-gray-900">{(user as any).telephone || 'N/A'}</span>
+                        <span className="text-sm text-gray-900">{user.telephone || 'N/A'}</span>
                       </td>
                       <td className="hidden lg:table-cell px-6 py-4 whitespace-nowrap">
                         {user.isActive ? (
@@ -248,7 +248,7 @@ export default function UsersPage() {
                       </td>
                       <td className="hidden xl:table-cell px-6 py-4 whitespace-nowrap">
                         <span className="text-sm text-gray-900">
-                          {(user as any).createdAt ? formatDate((user as any).createdAt) : 'N/A'}
+                          {user.createdAt ? formatDate(user.createdAt) : 'N/A'}
                         </span>
                       </td>
                       <td className="px-3 py-3 sm:px-6 sm:py-4 whitespace-nowrap text-right text-sm font-medium">
@@ -321,7 +321,7 @@ function UserForm({ user, onClose }: { user: User | null; onClose: () => void })
     nom: user?.nom || '',
     prenom: user?.prenom || '',
     role: user?.role || 'assistant',
-    telephone: (user as any)?.telephone || '',
+    telephone: user?.telephone || '',
     isActive: user?.isActive ?? true,
   })
 
@@ -329,9 +329,9 @@ function UserForm({ user, onClose }: { user: User | null; onClose: () => void })
     mutationFn: async (data: typeof formData) => {
       if (user) {
         // Don't send empty password on update
-        const updateData = { ...data }
+        const updateData: Record<string, unknown> = { ...data }
         if (!updateData.password) {
-          delete (updateData as any).password
+          delete updateData.password
         }
         return api.patch(`/users/${user.id}`, updateData)
       } else {
@@ -342,8 +342,9 @@ function UserForm({ user, onClose }: { user: User | null; onClose: () => void })
       queryClient.invalidateQueries({ queryKey: ['users'] })
       onClose()
     },
-    onError: (error: any) => {
-      alert(error.response?.data?.message || 'Une erreur est survenue')
+    onError: (error: unknown) => {
+      const err = error as { response?: { data?: { message?: string } } }
+      alert(err.response?.data?.message || 'Une erreur est survenue')
     },
   })
 

@@ -9,6 +9,7 @@ import statsRoutes from './routes/stats.routes';
 import userRoutes from './routes/user.routes';
 import bilanRoutes from './routes/bilan.routes';
 import chargeRoutes from './routes/charge.routes';
+import bilanFinalRoutes from './routes/bilanFinal.routes';
 
 // Charger les variables d'environnement
 dotenv.config();
@@ -65,6 +66,7 @@ app.use('/api/stats', statsRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/bilan', bilanRoutes);
 app.use('/api/charges', chargeRoutes);
+app.use('/api/bilan-final', bilanFinalRoutes);
 
 // Error handler global
 app.use((err: any, req: Request, res: Response, next: NextFunction) => {
