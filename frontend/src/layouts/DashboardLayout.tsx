@@ -1,24 +1,28 @@
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import { Outlet, Link, useLocation } from 'react-router-dom'
 import { useAuthStore } from '../store/authStore'
-import { LayoutDashboard, Users, Calendar, LogOut, User, Menu, X } from 'lucide-react'
+import { LogOut, User, Menu, X } from 'lucide-react'
+import { getMenuItemsByRole } from '../config/menu.config'
 
 export default function DashboardLayout() {
   const { user, logout } = useAuthStore()
   const location = useLocation()
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
+  // Filtrer les menus selon le rôle de l'utilisateur
+  const menuItems = useMemo(() => {
+    if (!user?.role) return []
+    return getMenuItemsByRole(user.role)
+  }, [user?.role])
+
   const isActive = (path: string) => {
-    return location.pathname === path || location.pathname.startsWith(path + '/')
+    if (path === '/dashboard') {
+      return location.pathname === path
+    }
+    return location.pathname.startsWith(path)
   }
 
   const closeMobileMenu = () => setMobileMenuOpen(false)
-
-  const navLinks = [
-    { to: '/dashboard', icon: LayoutDashboard, label: 'Dashboard', exact: true },
-    { to: '/dashboard/patients', icon: Users, label: 'Patients', exact: false },
-    { to: '/dashboard/appointments', icon: Calendar, label: 'Rendez-vous', exact: false },
-  ]
 
   return (
     <div className="h-screen flex overflow-hidden bg-gray-50">
@@ -58,13 +62,13 @@ export default function DashboardLayout() {
           {/* Navigation */}
           <div className="flex-1 px-4">
             <nav className="space-y-2">
-              {navLinks.map((link) => {
-                const Icon = link.icon
-                const active = link.exact ? location.pathname === link.to : isActive(link.to)
+              {menuItems.map((item) => {
+                const Icon = item.icon
+                const active = isActive(item.path)
                 return (
                   <Link
-                    key={link.to}
-                    to={link.to}
+                    key={item.id}
+                    to={item.path}
                     onClick={closeMobileMenu}
                     className={`group flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-xl transition-all duration-200 ${
                       active
@@ -75,7 +79,7 @@ export default function DashboardLayout() {
                     <Icon className={`w-5 h-5 transition-transform duration-200 ${
                       active ? '' : 'group-hover:scale-110'
                     }`} />
-                    <span>{link.label}</span>
+                    <span>{item.label}</span>
                   </Link>
                 )
               })}
@@ -128,13 +132,13 @@ export default function DashboardLayout() {
             {/* Navigation */}
             <div className="mt-4 flex-1 flex flex-col px-4">
               <nav className="flex-1 space-y-2">
-                {navLinks.map((link) => {
-                  const Icon = link.icon
-                  const active = link.exact ? location.pathname === link.to : isActive(link.to)
+                {menuItems.map((item) => {
+                  const Icon = item.icon
+                  const active = isActive(item.path)
                   return (
                     <Link
-                      key={link.to}
-                      to={link.to}
+                      key={item.id}
+                      to={item.path}
                       className={`group flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-xl transition-all duration-200 ${
                         active
                           ? 'bg-blue-500 text-white shadow-lg shadow-blue-500/30'
@@ -144,7 +148,7 @@ export default function DashboardLayout() {
                       <Icon className={`w-5 h-5 transition-transform duration-200 ${
                         active ? '' : 'group-hover:scale-110'
                       }`} />
-                      <span>{link.label}</span>
+                      <span>{item.label}</span>
                     </Link>
                   )
                 })}

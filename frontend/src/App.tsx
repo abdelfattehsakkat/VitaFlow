@@ -7,6 +7,7 @@ import DashboardPage from './pages/DashboardPage'
 import PatientsPage from './pages/PatientsPage'
 import PatientDetailsPage from './pages/PatientDetailsPage'
 import AppointmentsPage from './pages/AppointmentsPage'
+import UsersPage from './pages/UsersPage'
 
 function App() {
   const { isAuthenticated, checkAuth } = useAuthStore()
@@ -28,6 +29,7 @@ function App() {
         <Route path="patients" element={<PatientsPage />} />
         <Route path="patients/:id" element={<PatientDetailsPage />} />
         <Route path="appointments" element={<AppointmentsPage />} />
+        <Route path="users" element={<UsersPage />} />
       </Route>
 
       <Route path="/" element={<Navigate to="/dashboard" replace />} />
