@@ -28,17 +28,14 @@ COPY --from=builder /app/dist /usr/share/nginx/html
 COPY entrypoint.sh /docker-entrypoint.d/40-configure-api-url.sh
 RUN chmod +x /docker-entrypoint.d/40-configure-api-url.sh
 
-# Variable d'environnement pour l'URL de l'API (configurable au runtime)
+# Variables d'environnement (configurables au runtime)
 ENV VITE_API_URL=http://localhost:3001/api
+ENV VITE_OPENWEATHER_API_KEY=YOUR_API_KEY_HERE
 
 EXPOSE 80
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
-    CMD wget --no-verbose --tries=1 --spider http://localhost/ || exit 1
-
-CMD ["nginx", "-g", "daemon off;"]
-
     CMD wget --no-verbose --tries=1 --spider http://localhost/ || exit 1
 
 CMD ["nginx", "-g", "daemon off;"]

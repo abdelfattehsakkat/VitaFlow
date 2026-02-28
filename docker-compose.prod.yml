@@ -61,6 +61,7 @@ services:
     restart: always
     environment:
       VITE_API_URL: ${VITE_API_URL:-http://localhost:3001/api}
+      VITE_OPENWEATHER_API_KEY: ${VITE_OPENWEATHER_API_KEY:-YOUR_API_KEY_HERE}
     ports:
       - "${FRONTEND_PORT:-80}:80"
     depends_on:
