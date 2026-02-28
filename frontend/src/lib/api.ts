@@ -1,23 +1,8 @@
 import axios from 'axios'
 
-// Détection automatique de l'URL de l'API
-const getApiUrl = () => {
-  // Si VITE_API_URL est défini, l'utiliser
-  if (import.meta.env.VITE_API_URL) {
-    return import.meta.env.VITE_API_URL
-  }
-  
-  // Sinon, détecter selon l'environnement
-  const hostname = window.location.hostname
-  if (hostname === 'localhost' || hostname === '127.0.0.1') {
-    return 'http://localhost:3001/api'
-  }
-  
-  // En production, utiliser le même hostname avec le port 3001
-  return `http://${hostname}:3001/api`
-}
-
-const API_BASE_URL = getApiUrl()
+// En production, cette valeur sera remplacée par le script entrypoint.sh
+// En développement, utilise VITE_API_URL ou le défaut localhost
+const API_BASE_URL = import.meta.env.VITE_API_URL || '__VITE_API_URL_PLACEHOLDER__'
 
 export const api = axios.create({
   baseURL: API_BASE_URL,
