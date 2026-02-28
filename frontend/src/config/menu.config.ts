@@ -1,4 +1,4 @@
-import { Home, Users, Calendar, UserCog } from 'lucide-react'
+import { Home, Users, Calendar, UserCog, TrendingUp } from 'lucide-react'
 
 export type UserRole = 'admin' | 'medecin' | 'assistant'
 
@@ -30,6 +30,13 @@ export const menuItems: MenuItem[] = [
     label: 'Calendrier',
     path: '/dashboard/appointments',
     icon: Calendar,
+    roles: ['admin', 'medecin', 'assistant'] // Tous
+  },
+  {
+    id: 'bilan',
+    label: 'Bilan',
+    path: '/dashboard/bilan',
+    icon: TrendingUp,
     roles: ['admin', 'medecin', 'assistant'] // Tous
   },
   {
