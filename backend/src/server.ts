@@ -6,6 +6,7 @@ import authRoutes from './routes/auth.routes';
 import patientRoutes from './routes/patient.routes';
 import rendezVousRoutes from './routes/rendezVous.routes';
 import statsRoutes from './routes/stats.routes';
+import userRoutes from './routes/user.routes';
 
 // Charger les variables d'environnement
 dotenv.config();
@@ -59,6 +60,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/patients', patientRoutes);
 app.use('/api/rendez-vous', rendezVousRoutes);
 app.use('/api/stats', statsRoutes);
+app.use('/api/users', userRoutes);
 
 // Error handler global
 app.use((err: any, req: Request, res: Response, next: NextFunction) => {
