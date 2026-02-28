@@ -108,7 +108,7 @@ export default function BilanPage() {
         </div>
         
         <div className="space-y-1 sm:space-y-2">
-          <h1 className="text-2xl sm:text-4xl font-semibold tracking-tight text-gray-900">Bilan Comptable</h1>
+          <h1 className="text-2xl sm:text-4xl font-semibold tracking-tight text-gray-900">Revenus du Cabinet</h1>
           <p className="text-sm sm:text-base text-gray-500 max-w-2xl">
             Vue d'ensemble des revenus et statistiques financières du cabinet
           </p>

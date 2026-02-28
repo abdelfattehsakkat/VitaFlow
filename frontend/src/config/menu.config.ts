@@ -34,7 +34,7 @@ export const menuItems: MenuItem[] = [
   },
   {
     id: 'bilan',
-    label: 'Bilan',
+    label: 'Revenu',
     path: '/dashboard/bilan',
     icon: TrendingUp,
     roles: ['admin', 'medecin', 'assistant'] // Tous
