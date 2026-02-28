@@ -9,6 +9,7 @@ import PatientDetailsPage from './pages/PatientDetailsPage'
 import AppointmentsPage from './pages/AppointmentsPage'
 import UsersPage from './pages/UsersPage'
 import BilanPage from './pages/BilanPage'
+import ChargesPage from './pages/ChargesPage'
 
 function App() {
   const { isAuthenticated, checkAuth } = useAuthStore()
@@ -31,6 +32,7 @@ function App() {
         <Route path="patients/:id" element={<PatientDetailsPage />} />
         <Route path="appointments" element={<AppointmentsPage />} />
         <Route path="bilan" element={<BilanPage />} />
+        <Route path="charges" element={<ChargesPage />} />
         <Route path="users" element={<UsersPage />} />
       </Route>
 

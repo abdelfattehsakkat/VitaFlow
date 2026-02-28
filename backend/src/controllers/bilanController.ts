@@ -126,7 +126,7 @@ export const getBilanMonthly = async (req: AuthRequest, res: Response) => {
 
     // Remplir les mois manquants avec des valeurs à 0
     const result = [];
-    for (let i = 11; i >= 0; i--) {
+    for (let i = 0; i <= 11; i++) {
       const date = new Date(now.getFullYear(), now.getMonth() - i, 1);
       const year = date.getFullYear();
       const month = date.getMonth() + 1;

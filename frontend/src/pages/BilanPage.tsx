@@ -194,7 +194,7 @@ export default function BilanPage() {
               </thead>
               <tbody className="divide-y divide-gray-200/60">
                 {monthly.map((month, index) => {
-                  const isCurrentMonth = index === monthly.length - 1
+                  const isCurrentMonth = index === 0
                   return (
                     <tr 
                       key={`${month.year}-${month.month}`}
