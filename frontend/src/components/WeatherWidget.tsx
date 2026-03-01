@@ -21,27 +21,27 @@ interface WeatherData {
 }
 
 const getWeatherIcon = (weatherMain: string) => {
-  const iconClass = "h-12 w-12"
+  const iconClass = "h-16 w-16 sm:h-20 sm:w-20"
   
   switch (weatherMain.toLowerCase()) {
     case 'clear':
-      return <Sun className={`${iconClass} text-yellow-500`} />
+      return <Sun className={`${iconClass} text-yellow-400 drop-shadow-lg`} />
     case 'clouds':
-      return <Cloud className={`${iconClass} text-gray-400`} />
+      return <Cloud className={`${iconClass} text-gray-300 drop-shadow-lg`} />
     case 'rain':
-      return <CloudRain className={`${iconClass} text-blue-500`} />
+      return <CloudRain className={`${iconClass} text-blue-400 drop-shadow-lg`} />
     case 'drizzle':
-      return <CloudDrizzle className={`${iconClass} text-blue-400`} />
+      return <CloudDrizzle className={`${iconClass} text-blue-300 drop-shadow-lg`} />
     case 'snow':
-      return <CloudSnow className={`${iconClass} text-blue-200`} />
+      return <CloudSnow className={`${iconClass} text-blue-200 drop-shadow-lg`} />
     case 'thunderstorm':
-      return <Zap className={`${iconClass} text-yellow-600`} />
+      return <Zap className={`${iconClass} text-yellow-500 drop-shadow-lg`} />
     case 'mist':
     case 'fog':
     case 'haze':
-      return <CloudFog className={`${iconClass} text-gray-500`} />
+      return <CloudFog className={`${iconClass} text-gray-400 drop-shadow-lg`} />
     default:
-      return <Wind className={`${iconClass} text-gray-400`} />
+      return <Wind className={`${iconClass} text-gray-300 drop-shadow-lg`} />
   }
 }
 
@@ -72,17 +72,31 @@ export default function WeatherWidget() {
   // Si la clé API n'est pas configurée, afficher un widget par défaut
   if (weatherConfig.apiKey === 'YOUR_API_KEY_HERE' || isError) {
     return (
-      <div className="bg-gradient-to-br from-sky-50 to-blue-100/50 rounded-xl border border-sky-200 p-6">
-        <div className="flex items-center justify-between">
-          <div>
-            <p className="text-sm font-medium text-sky-900/70">Météo</p>
-            <p className="text-2xl font-bold text-sky-900 mt-1">{weatherConfig.city}</p>
-            <p className="text-xs text-sky-700 mt-2">
-              Configurez votre clé API OpenWeatherMap
-            </p>
+      <div className="bg-gradient-to-br from-sky-500 to-blue-600 rounded-2xl shadow-xl border border-sky-400/30 p-6 sm:p-8 relative overflow-hidden">
+        <div className="absolute top-0 right-0 w-48 h-48 bg-white/10 rounded-full blur-3xl"></div>
+        <div className="relative z-10">
+          <div className="flex items-start justify-between">
+            <div className="flex-1">
+              <p className="text-sm font-medium text-sky-100 mb-1">Météo</p>
+              <p className="text-4xl sm:text-5xl font-bold text-white mb-2">24°C</p>
+              <p className="text-sm text-sky-100 capitalize mb-1">Ciel Dégagé</p>
+              <p className="text-xs text-sky-200">
+                {weatherConfig.city} • Ressenti 23°C
+              </p>
+            </div>
+            <div className="animate-pulse">
+              <Sun className="h-20 w-20 text-yellow-300 drop-shadow-2xl" />
+            </div>
           </div>
-          <div className="text-sky-600">
-            <Sun className="h-12 w-12" />
+          
+          <div className="mt-6 pt-4 border-t border-white/20 flex items-center justify-between text-sm text-sky-100">
+            <div className="flex items-center gap-2">
+              <Wind className="h-4 w-4" />
+              <span>5.06 m/s</span>
+            </div>
+            <div>
+              <span>Humidité 21%</span>
+            </div>
           </div>
         </div>
       </div>
@@ -91,14 +105,14 @@ export default function WeatherWidget() {
 
   if (isLoading) {
     return (
-      <div className="bg-gradient-to-br from-sky-50 to-blue-100/50 rounded-xl border border-sky-200 p-6">
+      <div className="bg-gradient-to-br from-sky-500 to-blue-600 rounded-2xl shadow-xl border border-sky-400/30 p-6 sm:p-8">
         <div className="animate-pulse flex items-center justify-between">
-          <div className="space-y-2">
-            <div className="h-4 bg-sky-200 rounded w-16"></div>
-            <div className="h-8 bg-sky-200 rounded w-24"></div>
-            <div className="h-3 bg-sky-200 rounded w-32"></div>
+          <div className="space-y-3 flex-1">
+            <div className="h-4 bg-white/20 rounded w-16"></div>
+            <div className="h-12 bg-white/20 rounded w-24"></div>
+            <div className="h-3 bg-white/20 rounded w-32"></div>
           </div>
-          <div className="h-12 w-12 bg-sky-200 rounded-full"></div>
+          <div className="h-20 w-20 bg-white/20 rounded-full"></div>
         </div>
       </div>
     )
@@ -107,32 +121,35 @@ export default function WeatherWidget() {
   if (!weather) return null
 
   return (
-    <div className="bg-gradient-to-br from-sky-50 to-blue-100/50 rounded-xl border border-sky-200 p-6 hover:shadow-lg transition-all duration-200">
-      <div className="flex items-center justify-between">
-        <div>
-          <p className="text-sm font-medium text-sky-900/70">Météo</p>
-          <p className="text-3xl font-bold text-sky-900 mt-1">
-            {Math.round(weather.main.temp)}°C
-          </p>
-          <p className="text-xs text-sky-700 mt-2 capitalize">
-            {weather.weather[0].description}
-          </p>
-          <p className="text-xs text-sky-600 mt-1">
-            {weather.name} • Ressenti {Math.round(weather.main.feels_like)}°C
-          </p>
+    <div className="bg-gradient-to-br from-sky-500 to-blue-600 rounded-2xl shadow-xl border border-sky-400/30 p-6 sm:p-8 hover:shadow-2xl hover:scale-[1.02] transition-all duration-300 relative overflow-hidden">
+      <div className="absolute top-0 right-0 w-48 h-48 bg-white/10 rounded-full blur-3xl"></div>
+      <div className="relative z-10">
+        <div className="flex items-start justify-between">
+          <div className="flex-1">
+            <p className="text-sm font-medium text-sky-100 mb-1">Météo</p>
+            <p className="text-4xl sm:text-5xl font-bold text-white mb-2">
+              {Math.round(weather.main.temp)}°C
+            </p>
+            <p className="text-sm text-sky-100 capitalize mb-1">
+              {weather.weather[0].description}
+            </p>
+            <p className="text-xs text-sky-200">
+              {weather.name} • Ressenti {Math.round(weather.main.feels_like)}°C
+            </p>
+          </div>
+          <div className="animate-bounce" style={{ animationDuration: '3s' }}>
+            {getWeatherIcon(weather.weather[0].main)}
+          </div>
         </div>
-        <div>
-          {getWeatherIcon(weather.weather[0].main)}
-        </div>
-      </div>
-      
-      <div className="mt-4 pt-4 border-t border-sky-200 flex items-center justify-between text-xs text-sky-700">
-        <div className="flex items-center gap-1">
-          <Wind className="h-3 w-3" />
-          <span>{weather.wind.speed} m/s</span>
-        </div>
-        <div>
-          <span>Humidité {weather.main.humidity}%</span>
+        
+        <div className="mt-6 pt-4 border-t border-white/20 flex items-center justify-between text-sm text-sky-100">
+          <div className="flex items-center gap-2">
+            <Wind className="h-4 w-4" />
+            <span>{weather.wind.speed} m/s</span>
+          </div>
+          <div>
+            <span>Humidité {weather.main.humidity}%</span>
+          </div>
         </div>
       </div>
     </div>

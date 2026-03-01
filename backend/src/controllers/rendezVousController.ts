@@ -244,3 +244,53 @@ export const deleteRendezVous = async (req: AuthRequest, res: Response) => {
     res.status(500).json({ success: false, message: error.message });
   }
 };
+
+/**
+ * Get next rendez-vous (le plus proche dans le futur)
+ */
+export const getNextRendezVous = async (req: AuthRequest, res: Response) => {
+  try {
+    const now = new Date();
+    
+    const rdv = await RendezVous.findOne({
+      date: { $gte: now },
+      statut: { $ne: 'annule' }
+    })
+      .populate('patientId', 'nom prenom telephone')
+      .sort({ date: 1, heureDebut: 1 })
+      .limit(1);
+    
+    res.json({
+      success: true,
+      data: rdv
+    });
+  } catch (error: any) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+/**
+ * Get today's rendez-vous
+ */
+export const getTodayRendezVous = async (req: AuthRequest, res: Response) => {
+  try {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const tomorrow = new Date(today);
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    
+    const rendezVous = await RendezVous.find({
+      date: { $gte: today, $lt: tomorrow },
+      statut: { $ne: 'annule' }
+    })
+      .populate('patientId', 'nom prenom telephone')
+      .sort({ heureDebut: 1 });
+    
+    res.json({
+      success: true,
+      data: rendezVous
+    });
+  } catch (error: any) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};

@@ -68,18 +68,7 @@ rendezvousSchema.pre('validate', function() {
   if (this.heureDebut >= this.heureFin) {
     throw new Error('Heure de début doit être avant heure de fin');
   }
-  
-  // Vérifier durée (15min - 3h)
-  const [h1, m1] = this.heureDebut.split(':').map(Number);
-  const [h2, m2] = this.heureFin.split(':').map(Number);
-  const minutes = (h2 * 60 + m2) - (h1 * 60 + m1);
-  
-  if (minutes < 15) {
-    throw new Error('Durée minimum: 15 minutes');
-  }
-  if (minutes > 180) {
-    throw new Error('Durée maximum: 3 heures');
-  }
+
 });
 
 export default mongoose.model<IRendezVous>('RendezVous', rendezvousSchema);

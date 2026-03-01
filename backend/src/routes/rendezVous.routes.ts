@@ -15,6 +15,20 @@ router.use(authenticate);
 router.get('/', rendezVousController.getRendezVous);
 
 /**
+ * @route   GET /api/rendez-vous/next
+ * @desc    Prochain rendez-vous
+ * @access  Private
+ */
+router.get('/next', rendezVousController.getNextRendezVous);
+
+/**
+ * @route   GET /api/rendez-vous/today
+ * @desc    Rendez-vous d'aujourd'hui
+ * @access  Private
+ */
+router.get('/today', rendezVousController.getTodayRendezVous);
+
+/**
  * @route   GET /api/rendez-vous/:id
  * @desc    Détails d'un rendez-vous
  * @access  Private
