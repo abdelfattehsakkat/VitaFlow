@@ -755,14 +755,14 @@ function SoinForm({
               <div className="p-6 bg-gradient-to-br from-blue-50 to-indigo-50/50 rounded-xl border border-blue-200/60">
                 
                 {/* Upper Jaw - Arc Shape */}
-                <div className="mb-8">
-                  <p className="text-xs text-gray-500 text-center mb-4 font-medium">Mâchoire supérieure</p>
-                  <div className="flex justify-center items-end gap-1 px-4">
+                <div className="mb-10">
+                  <p className="text-xs text-gray-500 text-center mb-6 font-medium">Mâchoire supérieure</p>
+                  <div className="flex justify-center items-center gap-0.5 px-4" style={{ minHeight: '100px' }}>
                     {/* Right side (18-11) */}
                     {[18, 17, 16, 15, 14, 13, 12, 11].map((tooth, index) => {
-                      // Create arc effect: molars higher, incisors lower
-                      const marginTop = [0, 4, 8, 12, 16, 18, 20, 22][index]
-                      const rotate = [-8, -6, -4, -2, -1, 0, 0, 0][index]
+                      // Décalage progressif vers le haut (molaires en haut, incisives au centre)
+                      const translateY = [-50, -42, -32, -22, -12, -6, -2, 0][index]
+                      const rotate = [-12, -10, -7, -5, -3, -1, 0, 0][index]
                       return (
                         <button
                           key={tooth}
@@ -772,10 +772,9 @@ function SoinForm({
                             setShowToothSelector(false)
                           }}
                           style={{ 
-                            marginTop: `${marginTop}px`,
-                            transform: `rotate(${rotate}deg)`
+                            transform: `translateY(${translateY}px) rotate(${rotate}deg)`
                           }}
-                          className={`w-9 h-12 text-xs font-semibold rounded-lg transition-all duration-150 hover:scale-110 ${
+                          className={`w-9 h-12 text-xs font-semibold rounded-md transition-all duration-150 hover:scale-110 ${
                             formData.dent === tooth.toString()
                               ? 'bg-blue-500 text-white shadow-md'
                               : 'bg-white text-gray-700 border border-gray-300 hover:bg-blue-100 hover:border-blue-400'
@@ -787,13 +786,13 @@ function SoinForm({
                       )
                     })}
                     
-                    <div className="w-px bg-gray-300 mx-2 self-center" style={{ height: '40px' }}></div>
+                    <div className="w-0.5 bg-gray-400 mx-3" style={{ height: '50px' }}></div>
                     
                     {/* Left side (21-28) */}
                     {[21, 22, 23, 24, 25, 26, 27, 28].map((tooth, index) => {
-                      // Mirror arc effect
-                      const marginTop = [22, 20, 18, 16, 12, 8, 4, 0][index]
-                      const rotate = [0, 0, 0, 1, 2, 4, 6, 8][index]
+                      // Miroir : centre stable, molaires montent
+                      const translateY = [0, -2, -6, -12, -22, -32, -42, -50][index]
+                      const rotate = [0, 0, 1, 3, 5, 7, 10, 12][index]
                       return (
                         <button
                           key={tooth}
@@ -803,10 +802,9 @@ function SoinForm({
                             setShowToothSelector(false)
                           }}
                           style={{ 
-                            marginTop: `${marginTop}px`,
-                            transform: `rotate(${rotate}deg)`
+                            transform: `translateY(${translateY}px) rotate(${rotate}deg)`
                           }}
-                          className={`w-9 h-12 text-xs font-semibold rounded-lg transition-all duration-150 hover:scale-110 ${
+                          className={`w-9 h-12 text-xs font-semibold rounded-md transition-all duration-150 hover:scale-110 ${
                             formData.dent === tooth.toString()
                               ? 'bg-blue-500 text-white shadow-md'
                               : 'bg-white text-gray-700 border border-gray-300 hover:bg-blue-100 hover:border-blue-400'
@@ -821,16 +819,16 @@ function SoinForm({
                 </div>
 
                 {/* Separator */}
-                <div className="h-px bg-gradient-to-r from-transparent via-gray-300 to-transparent my-6"></div>
+                <div className="h-px bg-gradient-to-r from-transparent via-gray-300 to-transparent my-8"></div>
 
                 {/* Lower Jaw - Inverted Arc Shape */}
                 <div>
-                  <div className="flex justify-center items-start gap-1 px-4 mb-2">
+                  <div className="flex justify-center items-center gap-0.5 px-4 mb-2" style={{ minHeight: '100px' }}>
                     {/* Right side (48-41) */}
                     {[48, 47, 46, 45, 44, 43, 42, 41].map((tooth, index) => {
-                      // Inverted arc: molars lower, incisors higher
-                      const marginBottom = [0, 4, 8, 12, 16, 18, 20, 22][index]
-                      const rotate = [8, 6, 4, 2, 1, 0, 0, 0][index]
+                      // Décalage progressif vers le bas (molaires en bas, incisives au centre)
+                      const translateY = [50, 42, 32, 22, 12, 6, 2, 0][index]
+                      const rotate = [12, 10, 7, 5, 3, 1, 0, 0][index]
                       return (
                         <button
                           key={tooth}
@@ -840,10 +838,9 @@ function SoinForm({
                             setShowToothSelector(false)
                           }}
                           style={{ 
-                            marginBottom: `${marginBottom}px`,
-                            transform: `rotate(${rotate}deg)`
+                            transform: `translateY(${translateY}px) rotate(${rotate}deg)`
                           }}
-                          className={`w-9 h-12 text-xs font-semibold rounded-lg transition-all duration-150 hover:scale-110 ${
+                          className={`w-9 h-12 text-xs font-semibold rounded-md transition-all duration-150 hover:scale-110 ${
                             formData.dent === tooth.toString()
                               ? 'bg-blue-500 text-white shadow-md'
                               : 'bg-white text-gray-700 border border-gray-300 hover:bg-blue-100 hover:border-blue-400'
@@ -855,13 +852,13 @@ function SoinForm({
                       )
                     })}
                     
-                    <div className="w-px bg-gray-300 mx-2 self-center" style={{ height: '40px' }}></div>
+                    <div className="w-0.5 bg-gray-400 mx-3" style={{ height: '50px' }}></div>
                     
                     {/* Left side (31-38) */}
                     {[31, 32, 33, 34, 35, 36, 37, 38].map((tooth, index) => {
-                      // Mirror inverted arc
-                      const marginBottom = [22, 20, 18, 16, 12, 8, 4, 0][index]
-                      const rotate = [0, 0, 0, -1, -2, -4, -6, -8][index]
+                      // Miroir : centre stable, molaires descendent
+                      const translateY = [0, 2, 6, 12, 22, 32, 42, 50][index]
+                      const rotate = [0, 0, -1, -3, -5, -7, -10, -12][index]
                       return (
                         <button
                           key={tooth}
@@ -871,10 +868,9 @@ function SoinForm({
                             setShowToothSelector(false)
                           }}
                           style={{ 
-                            marginBottom: `${marginBottom}px`,
-                            transform: `rotate(${rotate}deg)`
+                            transform: `translateY(${translateY}px) rotate(${rotate}deg)`
                           }}
-                          className={`w-9 h-12 text-xs font-semibold rounded-lg transition-all duration-150 hover:scale-110 ${
+                          className={`w-9 h-12 text-xs font-semibold rounded-md transition-all duration-150 hover:scale-110 ${
                             formData.dent === tooth.toString()
                               ? 'bg-blue-500 text-white shadow-md'
                               : 'bg-white text-gray-700 border border-gray-300 hover:bg-blue-100 hover:border-blue-400'
@@ -886,7 +882,7 @@ function SoinForm({
                       )
                     })}
                   </div>
-                  <p className="text-xs text-gray-500 text-center mt-4 font-medium">Mandibule</p>
+                  <p className="text-xs text-gray-500 text-center mt-6 font-medium">Mandibule</p>
                 </div>
                 
                 <div className="mt-4 pt-4 border-t border-blue-200/60">
