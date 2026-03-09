@@ -37,21 +37,21 @@ export const menuItems: MenuItem[] = [
     label: 'Revenu',
     path: '/dashboard/bilan',
     icon: TrendingUp,
-    roles: ['admin', 'medecin', 'assistant'] // Tous
+    roles: ['admin', 'medecin'] // Tous
   },
   {
     id: 'charges',
     label: 'Charges',
     path: '/dashboard/charges',
     icon: TrendingDown,
-    roles: ['admin', 'medecin', 'assistant'] // Tous
+    roles: ['admin', 'medecin'] // Tous
   },
   {
     id: 'bilan-final',
     label: 'Bilan',
     path: '/dashboard/bilan-final',
     icon: Scale,
-    roles: ['admin', 'medecin', 'assistant'] // Tous
+    roles: ['admin', 'medecin'] // Tous
   },
   {
     id: 'users',
