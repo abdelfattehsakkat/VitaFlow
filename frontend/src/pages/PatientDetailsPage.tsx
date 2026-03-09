@@ -762,7 +762,7 @@ function SoinForm({
                     {[18, 17, 16, 15, 14, 13, 12, 11].map((tooth, index) => {
                       // Décalage progressif vers le haut (molaires en haut, incisives au centre)
                       const translateY = [-50, -42, -32, -22, -12, -6, -2, 0][index]
-                      const rotate = [-12, -10, -7, -5, -3, -1, 0, 0][index]
+                      const rotate = [12, 10, 7, 5, 3, 1, 0, 0][index]
                       return (
                         <button
                           key={tooth}
@@ -792,7 +792,7 @@ function SoinForm({
                     {[21, 22, 23, 24, 25, 26, 27, 28].map((tooth, index) => {
                       // Miroir : centre stable, molaires montent
                       const translateY = [0, -2, -6, -12, -22, -32, -42, -50][index]
-                      const rotate = [0, 0, 1, 3, 5, 7, 10, 12][index]
+                      const rotate = [0, 0, -1, -3, -5, -7, -10, -12][index]
                       return (
                         <button
                           key={tooth}
@@ -828,7 +828,7 @@ function SoinForm({
                     {[48, 47, 46, 45, 44, 43, 42, 41].map((tooth, index) => {
                       // Décalage progressif vers le bas (molaires en bas, incisives au centre)
                       const translateY = [50, 42, 32, 22, 12, 6, 2, 0][index]
-                      const rotate = [12, 10, 7, 5, 3, 1, 0, 0][index]
+                      const rotate = [-12, -10, -7, -5, -3, -1, 0, 0][index]
                       return (
                         <button
                           key={tooth}
@@ -858,7 +858,7 @@ function SoinForm({
                     {[31, 32, 33, 34, 35, 36, 37, 38].map((tooth, index) => {
                       // Miroir : centre stable, molaires descendent
                       const translateY = [0, 2, 6, 12, 22, 32, 42, 50][index]
-                      const rotate = [0, 0, -1, -3, -5, -7, -10, -12][index]
+                      const rotate = [0, 0, 1, 3, 5, 7, 10, 12][index]
                       return (
                         <button
                           key={tooth}
