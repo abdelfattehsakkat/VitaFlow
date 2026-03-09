@@ -14,6 +14,7 @@ import {
   Edit2,
   Trash2,
   Wallet,
+  X,
 } from 'lucide-react'
 import api from '../lib/api'
 import type { Patient, ApiResponse, Soin } from '../types'
@@ -567,6 +568,7 @@ function SoinForm({
   onClose: () => void
 }) {
   const queryClient = useQueryClient()
+  const [showToothSelector, setShowToothSelector] = useState(false)
   const [formData, setFormData] = useState({
     date: soin?.date.split('T')[0] || new Date().toISOString().split('T')[0],
     dent: soin?.dent || '',
@@ -636,15 +638,25 @@ function SoinForm({
             </div>
 
             <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">Dent</label>
-              <input
-                type="text"
-                name="dent"
-                value={formData.dent}
-                onChange={handleChange}
-                placeholder="Ex: 11, 21, 36..."
-                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all duration-150"
-              />
+              <label className="block text-sm font-semibold text-gray-700 mb-2">Dent (FDI)</label>
+              <div className="flex gap-2">
+                <input
+                  type="text"
+                  name="dent"
+                  value={formData.dent}
+                  onChange={handleChange}
+                  placeholder="Ex: 11, 21, 36..."
+                  className="flex-1 px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all duration-150"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowToothSelector(true)}
+                  className="px-4 py-3 bg-blue-500 hover:bg-blue-600 text-white font-medium rounded-xl transition-all duration-150 hover:scale-105 shadow-sm hover:shadow-md flex items-center gap-2 whitespace-nowrap"
+                  title="Sélection rapide"
+                >
+                  🦷
+                </button>
+              </div>
             </div>
           </div>
 
@@ -713,6 +725,180 @@ function SoinForm({
             </button>
           </div>
         </form>
+
+        {/* Tooth Selector Popup Modal */}
+        {showToothSelector && (
+          <div 
+            className="fixed inset-0 z-50 flex items-start justify-center bg-black/50 backdrop-blur-sm p-4"
+            onClick={() => setShowToothSelector(false)}
+          >
+            <div 
+              className="bg-white rounded-2xl shadow-2xl max-w-3xl w-full mt-20 p-6 animate-fade-in"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {/* Modal Header */}
+              <div className="flex items-center justify-between mb-6 pb-4 border-b border-gray-200">
+                <div>
+                  <h3 className="text-xl font-bold text-gray-800">Sélection de dent</h3>
+                  <p className="text-sm text-gray-500 mt-1">Système FDI (Fédération Dentaire Internationale)</p>
+                </div>
+                <button
+                  onClick={() => setShowToothSelector(false)}
+                  className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                  title="Fermer"
+                >
+                  <X className="h-5 w-5 text-gray-500" />
+                </button>
+              </div>
+
+              {/* Modal Body */}
+              <div className="p-6 bg-gradient-to-br from-blue-50 to-indigo-50/50 rounded-xl border border-blue-200/60">
+                
+                {/* Upper Jaw - Arc Shape */}
+                <div className="mb-8">
+                  <p className="text-xs text-gray-500 text-center mb-4 font-medium">Mâchoire supérieure</p>
+                  <div className="flex justify-center items-end gap-1 px-4">
+                    {/* Right side (18-11) */}
+                    {[18, 17, 16, 15, 14, 13, 12, 11].map((tooth, index) => {
+                      // Create arc effect: molars higher, incisors lower
+                      const marginTop = [0, 4, 8, 12, 16, 18, 20, 22][index]
+                      const rotate = [-8, -6, -4, -2, -1, 0, 0, 0][index]
+                      return (
+                        <button
+                          key={tooth}
+                          type="button"
+                          onClick={() => {
+                            setFormData({ ...formData, dent: tooth.toString() })
+                            setShowToothSelector(false)
+                          }}
+                          style={{ 
+                            marginTop: `${marginTop}px`,
+                            transform: `rotate(${rotate}deg)`
+                          }}
+                          className={`w-9 h-12 text-xs font-semibold rounded-lg transition-all duration-150 hover:scale-110 ${
+                            formData.dent === tooth.toString()
+                              ? 'bg-blue-500 text-white shadow-md'
+                              : 'bg-white text-gray-700 border border-gray-300 hover:bg-blue-100 hover:border-blue-400'
+                          }`}
+                          title={`Dent ${tooth}`}
+                        >
+                          {tooth}
+                        </button>
+                      )
+                    })}
+                    
+                    <div className="w-px bg-gray-300 mx-2 self-center" style={{ height: '40px' }}></div>
+                    
+                    {/* Left side (21-28) */}
+                    {[21, 22, 23, 24, 25, 26, 27, 28].map((tooth, index) => {
+                      // Mirror arc effect
+                      const marginTop = [22, 20, 18, 16, 12, 8, 4, 0][index]
+                      const rotate = [0, 0, 0, 1, 2, 4, 6, 8][index]
+                      return (
+                        <button
+                          key={tooth}
+                          type="button"
+                          onClick={() => {
+                            setFormData({ ...formData, dent: tooth.toString() })
+                            setShowToothSelector(false)
+                          }}
+                          style={{ 
+                            marginTop: `${marginTop}px`,
+                            transform: `rotate(${rotate}deg)`
+                          }}
+                          className={`w-9 h-12 text-xs font-semibold rounded-lg transition-all duration-150 hover:scale-110 ${
+                            formData.dent === tooth.toString()
+                              ? 'bg-blue-500 text-white shadow-md'
+                              : 'bg-white text-gray-700 border border-gray-300 hover:bg-blue-100 hover:border-blue-400'
+                          }`}
+                          title={`Dent ${tooth}`}
+                        >
+                          {tooth}
+                        </button>
+                      )
+                    })}
+                  </div>
+                </div>
+
+                {/* Separator */}
+                <div className="h-px bg-gradient-to-r from-transparent via-gray-300 to-transparent my-6"></div>
+
+                {/* Lower Jaw - Inverted Arc Shape */}
+                <div>
+                  <div className="flex justify-center items-start gap-1 px-4 mb-2">
+                    {/* Right side (48-41) */}
+                    {[48, 47, 46, 45, 44, 43, 42, 41].map((tooth, index) => {
+                      // Inverted arc: molars lower, incisors higher
+                      const marginBottom = [0, 4, 8, 12, 16, 18, 20, 22][index]
+                      const rotate = [8, 6, 4, 2, 1, 0, 0, 0][index]
+                      return (
+                        <button
+                          key={tooth}
+                          type="button"
+                          onClick={() => {
+                            setFormData({ ...formData, dent: tooth.toString() })
+                            setShowToothSelector(false)
+                          }}
+                          style={{ 
+                            marginBottom: `${marginBottom}px`,
+                            transform: `rotate(${rotate}deg)`
+                          }}
+                          className={`w-9 h-12 text-xs font-semibold rounded-lg transition-all duration-150 hover:scale-110 ${
+                            formData.dent === tooth.toString()
+                              ? 'bg-blue-500 text-white shadow-md'
+                              : 'bg-white text-gray-700 border border-gray-300 hover:bg-blue-100 hover:border-blue-400'
+                          }`}
+                          title={`Dent ${tooth}`}
+                        >
+                          {tooth}
+                        </button>
+                      )
+                    })}
+                    
+                    <div className="w-px bg-gray-300 mx-2 self-center" style={{ height: '40px' }}></div>
+                    
+                    {/* Left side (31-38) */}
+                    {[31, 32, 33, 34, 35, 36, 37, 38].map((tooth, index) => {
+                      // Mirror inverted arc
+                      const marginBottom = [22, 20, 18, 16, 12, 8, 4, 0][index]
+                      const rotate = [0, 0, 0, -1, -2, -4, -6, -8][index]
+                      return (
+                        <button
+                          key={tooth}
+                          type="button"
+                          onClick={() => {
+                            setFormData({ ...formData, dent: tooth.toString() })
+                            setShowToothSelector(false)
+                          }}
+                          style={{ 
+                            marginBottom: `${marginBottom}px`,
+                            transform: `rotate(${rotate}deg)`
+                          }}
+                          className={`w-9 h-12 text-xs font-semibold rounded-lg transition-all duration-150 hover:scale-110 ${
+                            formData.dent === tooth.toString()
+                              ? 'bg-blue-500 text-white shadow-md'
+                              : 'bg-white text-gray-700 border border-gray-300 hover:bg-blue-100 hover:border-blue-400'
+                          }`}
+                          title={`Dent ${tooth}`}
+                        >
+                          {tooth}
+                        </button>
+                      )
+                    })}
+                  </div>
+                  <p className="text-xs text-gray-500 text-center mt-4 font-medium">Mandibule</p>
+                </div>
+                
+                <div className="mt-4 pt-4 border-t border-blue-200/60">
+                  <p className="text-xs text-gray-600 text-center flex items-center justify-center gap-2">
+                    <span className="text-base">💡</span>
+                    Cliquez sur une dent pour la sélectionner
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   )
