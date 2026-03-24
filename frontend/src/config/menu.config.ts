@@ -1,4 +1,4 @@
-import { Home, Users, Calendar, UserCog, TrendingUp, TrendingDown, Scale } from 'lucide-react'
+import { Home, Users, Calendar, UserCog, Wallet } from 'lucide-react'
 
 export type UserRole = 'admin' | 'medecin' | 'assistant'
 
@@ -13,7 +13,7 @@ export interface MenuItem {
 export const menuItems: MenuItem[] = [
   {
     id: 'dashboard',
-    label: 'Dashboard',
+    label: 'Accueil',
     path: '/dashboard',
     icon: Home,
     roles: ['admin', 'medecin', 'assistant'] // Tous
@@ -33,25 +33,11 @@ export const menuItems: MenuItem[] = [
     roles: ['admin', 'medecin', 'assistant'] // Tous
   },
   {
-    id: 'bilan',
-    label: 'Revenu',
-    path: '/dashboard/bilan',
-    icon: TrendingUp,
-    roles: ['admin', 'medecin'] // Tous
-  },
-  {
-    id: 'charges',
-    label: 'Charges',
-    path: '/dashboard/charges',
-    icon: TrendingDown,
-    roles: ['admin', 'medecin'] // Tous
-  },
-  {
-    id: 'bilan-final',
-    label: 'Bilan',
-    path: '/dashboard/bilan-final',
-    icon: Scale,
-    roles: ['admin', 'medecin'] // Tous
+    id: 'finance',
+    label: 'Finance',
+    path: '/dashboard/finance',
+    icon: Wallet,
+    roles: ['admin', 'medecin']
   },
   {
     id: 'users',
