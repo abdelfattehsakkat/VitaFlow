@@ -92,7 +92,7 @@ export default function WeatherWidget() {
           <div className="mt-6 pt-4 border-t border-white/20 flex items-center justify-between text-sm text-sky-100">
             <div className="flex items-center gap-2">
               <Wind className="h-4 w-4" />
-              <span>5.06 m/s</span>
+              <span>18 km/h</span>
             </div>
             <div>
               <span>Humidité 21%</span>
@@ -145,7 +145,7 @@ export default function WeatherWidget() {
         <div className="mt-6 pt-4 border-t border-white/20 flex items-center justify-between text-sm text-sky-100">
           <div className="flex items-center gap-2">
             <Wind className="h-4 w-4" />
-            <span>{weather.wind.speed} m/s</span>
+            <span>{Math.round(weather.wind.speed * 3.6)} km/h</span>
           </div>
           <div>
             <span>Humidité {weather.main.humidity}%</span>
