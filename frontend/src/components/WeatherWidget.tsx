@@ -50,7 +50,7 @@ export default function WeatherWidget() {
     queryKey: ['weather', weatherConfig.city],
     queryFn: async () => {
       // Si pas de clé API configurée, on ne fait pas la requête
-      if (weatherConfig.apiKey === 'YOUR_API_KEY_HERE') {
+      if (!weatherConfig.apiKey || weatherConfig.apiKey.includes('PLACEHOLDER') || weatherConfig.apiKey === 'YOUR_API_KEY_HERE') {
         throw new Error('API key not configured')
       }
       
@@ -66,11 +66,12 @@ export default function WeatherWidget() {
     },
     refetchInterval: 1800000, // Rafraîchir toutes les 30 minutes
     retry: false,
-    enabled: weatherConfig.apiKey !== 'YOUR_API_KEY_HERE'
+    enabled: !!weatherConfig.apiKey && !weatherConfig.apiKey.includes('PLACEHOLDER') && weatherConfig.apiKey !== 'YOUR_API_KEY_HERE'
   })
 
   // Si la clé API n'est pas configurée, afficher un widget par défaut
-  if (weatherConfig.apiKey === 'YOUR_API_KEY_HERE' || isError) {
+  const apiKeyMissing = !weatherConfig.apiKey || weatherConfig.apiKey.includes('PLACEHOLDER') || weatherConfig.apiKey === 'YOUR_API_KEY_HERE'
+  if (apiKeyMissing || isError) {
     return (
       <div className="bg-gradient-to-br from-sky-500 to-blue-600 rounded-2xl shadow-xl border border-sky-400/30 p-6 sm:p-8 relative overflow-hidden">
         <div className="absolute top-0 right-0 w-48 h-48 bg-white/10 rounded-full blur-3xl"></div>
@@ -134,7 +135,7 @@ export default function WeatherWidget() {
               {weather.weather[0].description}
             </p>
             <p className="text-xs text-sky-200">
-              {weather.name} • Ressenti {Math.round(weather.main.feels_like)}°C
+              {weatherConfig.city} • Ressenti {Math.round(weather.main.feels_like)}°C
             </p>
           </div>
           <div className="animate-bounce" style={{ animationDuration: '3s' }}>
